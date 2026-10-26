@@ -7,6 +7,7 @@
     ///   --snapshot <file>    shows the panel for a moment, saves a picture of it, then quits
     ///   --palette <file>     saves every installed app's icon colors and plates, in light and dark mode
     ///   --hang <seconds>     runs normally, then blocks the main thread that long, 2 s after launch (tries the ⌘Tab guard)
+    ///   --menu <file>        runs normally, opens the menu bar menu, saves a picture of it, then quits
     @MainActor
     enum DevTools {
         /// Runs `--list` or `--palette` (they never return) or gives the delegate for `--snapshot`; nil when none
@@ -20,6 +21,35 @@
         /// The seconds asked for with `--hang`, if any.
         static func hangSeconds(in arguments: [String]) -> TimeInterval? {
             value(of: "--hang", in: arguments).flatMap { TimeInterval($0) }
+        }
+
+        /// The file asked for with `--menu`, if any.
+        static func menuSnapshotPath(in arguments: [String]) -> String? {
+            value(of: "--menu", in: arguments)
+        }
+
+        /// Opens the menu bar menu, saves a picture of it a moment later, then quits. An open menu keeps the run loop
+        /// in its tracking mode, so the timer goes in the common modes.
+        static func snapshotMenu(of statusItem: NSStatusItem, to path: String) {
+            let timer = Timer(timeInterval: 1, repeats: false) { _ in
+                let windows = CGWindowListCopyWindowInfo(.optionOnScreenOnly, kCGNullWindowID) as? [[String: Any]] ?? []
+                let ours = windows.filter { ($0[kCGWindowOwnerPID as String] as? pid_t) == getpid() }
+                guard let menu = ours.first(where: { ($0[kCGWindowLayer as String] as? Int) == 101 }),
+                    let dictionary = menu[kCGWindowBounds as String] as? NSDictionary,
+                    let bounds = CGRect(dictionaryRepresentation: dictionary as CFDictionary)
+                else {
+                    print(
+                        "Menu not found among \(ours.count) windows at layers \(ours.compactMap { $0[kCGWindowLayer as String] })"
+                    )
+                    exit(1)
+                }
+                Task.detached {
+                    await Snapshot.save(bounds.insetBy(dx: -24, dy: -24), to: path)
+                    exit(0)
+                }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            statusItem.button?.performClick(nil)
         }
 
         private static func value(of option: String, in arguments: [String]) -> String? {
@@ -133,20 +163,41 @@
         }
 
         private func save(windowNumber: Int) async {
-            guard let panel = NSApp.window(withWindowNumber: windowNumber), let screen = panel.screen,
-                let displayID = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")]
-                    as? CGDirectDisplayID,
+            guard let panel = NSApp.window(withWindowNumber: windowNumber), let screen = panel.screen else {
+                return print("Panel not found")
+            }
+            // AppKit measures from the bottom left of the first screen, CGWindowList from its top left.
+            let frame = panel.frame.insetBy(dx: -40, dy: -40)
+            let rect = CGRect(
+                x: frame.minX, y: NSScreen.screens[0].frame.height - frame.maxY, width: frame.width,
+                height: frame.height)
+            await Snapshot.save(rect, to: path)
+            print(
+                "\(switcher.windows.count) windows, panel \(panel.isVisible ? "visible" : "hidden") at \(panel.frame) on a \(screen.frame.size) screen"
+            )
+        }
+    }
+
+    /// Saves a part of the screen as a PNG. `rect` is in points with the origin at the top left of the first
+    /// screen, the way CGWindowList reports window bounds.
+    private enum Snapshot {
+        static func save(_ rect: CGRect, to path: String) async {
+            var displayID = CGDirectDisplayID(0)
+            var count: UInt32 = 0
+            CGGetDisplaysWithRect(rect, 1, &displayID, &count)
+            guard count > 0,
                 let content = try? await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true),
                 let display = content.displays.first(where: { $0.displayID == displayID })
-            else { return print("Panel or display not found") }
-            let frame = panel.frame.insetBy(dx: -40, dy: -40)
-            let source = CGRect(
-                x: frame.minX - screen.frame.minX, y: screen.frame.maxY - frame.maxY,
-                width: frame.width, height: frame.height)
+            else { return print("Display not found") }
+            let bounds = CGDisplayBounds(displayID)
+            // CGDisplayPixelsWide gives points on a Retina display; the display mode knows the real pixels.
+            let pixels = CGDisplayCopyDisplayMode(displayID).map { CGFloat($0.pixelWidth) }
+            let scale = (pixels ?? bounds.width) / bounds.width
+            let source = rect.offsetBy(dx: -bounds.minX, dy: -bounds.minY)
             let configuration = SCStreamConfiguration()
             configuration.sourceRect = source
-            configuration.width = Int(source.width * screen.backingScaleFactor)
-            configuration.height = Int(source.height * screen.backingScaleFactor)
+            configuration.width = Int(source.width * scale)
+            configuration.height = Int(source.height * scale)
             configuration.showsCursor = false
             guard
                 let image = try? await SCScreenshotManager.captureImage(
@@ -155,9 +206,7 @@
                 let png = NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])
             else { return print("Capture failed") }
             try? png.write(to: URL(fileURLWithPath: path))
-            print(
-                "Saved \(path): \(switcher.windows.count) windows, panel \(panel.isVisible ? "visible" : "hidden") at \(panel.frame) on a \(screen.frame.size) screen"
-            )
+            print("Saved \(path)")
         }
     }
 

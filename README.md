@@ -19,7 +19,7 @@ built natively in Swift and AppKit with Liquid Glass, so it feels like part of m
 - **Your shortcut:** ⌘Tab (it takes over the built-in app switcher while TabWindo runs), ⌥Tab or ⌃Tab.
 - **Keys while it's open:** Tab moves forward; ⇧Tab, or ⇧ on its own, moves back; the arrow keys move around the
   grid; releasing the modifier or pressing Return switches; Esc cancels. The mouse works too.
-- Menu bar icon, no Dock icon: the shortcut, windows per row, what to show, and launch at login.
+- Menu bar icon, no Dock icon: the shortcut, windows per row, what to show, and open at login.
 
 ## Privacy
 

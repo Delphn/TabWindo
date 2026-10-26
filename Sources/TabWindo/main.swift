@@ -22,6 +22,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             if let seconds = DevTools.hangSeconds(in: CommandLine.arguments) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) { Thread.sleep(forTimeInterval: seconds) }
             }
+            if let path = DevTools.menuSnapshotPath(in: CommandLine.arguments) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [statusItem] in
+                    DevTools.snapshotMenu(of: statusItem, to: path)
+                }
+            }
         #endif
         if AXIsProcessTrusted() {
             run()
@@ -89,52 +94,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// Filled in each time it opens, so permission and login states are always current.
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
+        menu.addItem(MenuViews.title("TabWindo"))
         if !AXIsProcessTrusted() {
-            menu.addItem(item("Allow Accessibility Access…", #selector(openAccessibilitySettings)))
+            menu.addItem(
+                item("Allow Accessibility Access…", symbol: "accessibility", #selector(openAccessibilitySettings)))
         }
         if !CGPreflightScreenCaptureAccess() {
-            menu.addItem(item("Allow Screen Recording for Previews…", #selector(openScreenRecordingSettings)))
+            menu.addItem(
+                item(
+                    "Allow Screen Recording for Previews…", symbol: "rectangle.dashed.badge.record",
+                    #selector(openScreenRecordingSettings)))
         }
-        if menu.numberOfItems > 0 { menu.addItem(.separator()) }
+        menu.addItem(.separator())
         menu.addItem(.sectionHeader(title: "Shortcut"))
         for option in Modifier.allCases {
-            let entry = item("\(option.symbol) Tab", #selector(pickModifier(_:)))
+            let entry = item("\(option.name) Tab", symbol: option.symbolName, #selector(pickModifier(_:)))
             entry.representedObject = option.rawValue
             entry.state = option == Settings.modifier ? .on : .off
             menu.addItem(entry)
         }
         menu.addItem(.separator())
-        let perRow = NSMenuItem(title: "Windows per Row", action: nil, keyEquivalent: "")
-        perRow.submenu = NSMenu()
-        for count in 2...7 {
-            let entry = item("\(count)", #selector(pickColumns(_:)))
-            entry.tag = count
-            entry.state = count == Settings.columns ? .on : .off
-            perRow.submenu?.addItem(entry)
-        }
-        menu.addItem(perRow)
+        menu.addItem(.sectionHeader(title: "Windows per Row"))
+        menu.addItem(
+            MenuViews.picker(2...7, selected: Settings.columns) { [weak self] count in self?.pickColumns(count) })
         menu.addItem(.separator())
         menu.addItem(.sectionHeader(title: "Show"))
-        let otherSpaces = item("Other Desktops and Full Screen", #selector(toggleOtherSpaces))
+        let otherSpaces = item(
+            "Other Desktops and Full Screen", symbol: "square.on.square", #selector(toggleOtherSpaces))
         otherSpaces.state = Settings.showsOtherSpaces ? .on : .off
         menu.addItem(otherSpaces)
-        let hiddenApps = item("Hidden Apps", #selector(toggleHiddenApps))
+        let hiddenApps = item("Hidden Apps", symbol: "eye.slash", #selector(toggleHiddenApps))
         hiddenApps.state = Settings.showsHiddenApps ? .on : .off
         menu.addItem(hiddenApps)
         menu.addItem(.separator())
-        let login = item("Launch at Login", #selector(toggleLaunchAtLogin))
+        let login = item("Open at Login", #selector(toggleLaunchAtLogin))
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
-        menu.addItem(.separator())
         menu.addItem(
             NSMenuItem(
                 title: "Quit TabWindo", action: #selector(NSApplication.terminate(_:)),
                 keyEquivalent: "q"))
     }
 
-    private func item(_ title: String, _ action: Selector) -> NSMenuItem {
+    private func item(_ title: String, symbol: String? = nil, _ action: Selector) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
         item.target = self
+        item.image = symbol.flatMap { NSImage(systemSymbolName: $0, accessibilityDescription: nil) }
+        // macOS 27 hides menu images unless asked; the icons are what make the options quick to tell apart.
+        if #available(macOS 27, *) { item.preferredImageVisibility = .visible }
         return item
     }
 
@@ -143,9 +150,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         use(picked)
     }
 
-    @objc private func pickColumns(_ sender: NSMenuItem) {
-        Settings.columns = sender.tag
-        switcher.columns = sender.tag
+    private func pickColumns(_ count: Int) {
+        Settings.columns = count
+        switcher.columns = count
     }
 
     @objc private func toggleOtherSpaces() {

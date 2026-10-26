@@ -18,6 +18,8 @@ dependencies.
     It fails while the Mac is locked.
   - `open /Applications/TabWindo.app --args --hang 8` runs the app, then blocks its main thread for 8 s two
     seconds after launch; the log shows macOS getting ⌘Tab back and TabWindo taking it again.
+  - `open /Applications/TabWindo.app --args --menu "$TMPDIR/menu.png"` runs the app, opens its menu bar menu and
+    saves a picture of it. Quit the running TabWindo first: a second copy quits at once.
 - Tune plate colors: `swift build && .build/debug/TabWindo --palette "$TMPDIR/palette.png"` draws every installed
   app's icon colors and plates, in light and dark mode. It needs no permissions and works while the Mac is locked.
 - Logs: `/usr/bin/log show --last 5m --debug --predicate 'subsystem == "dev.delphin.TabWindo"'` (in zsh, plain
@@ -28,6 +30,7 @@ dependencies.
 
 - `main.swift`: app delegate, menu bar menu, permission prompts
 - `Settings.swift`: the menu's choices, kept in UserDefaults
+- `MenuViews.swift`: the menu's title and its windows-per-row picker
 - `Hotkeys.swift`: Carbon hot keys for ⌘Tab and ⌃Tab; the event tap for ⌥Tab and for keys while the switcher is open
 - `WindowStore.swift`: the window list, kept current on its own thread from Accessibility notifications
 - `Switcher.swift`: one switch, from key press to focus: show delay, selection, modifier release
@@ -37,7 +40,7 @@ dependencies.
 - `Private.swift`: every private macOS API, in one place
 - `CommandTabGuard.swift`: hands ⌘Tab back to macOS on signals, crashes and main-thread hangs
 - `ScreenLock.swift`: the lock screen, as macOS reports it
-- `DevTools.swift`: `--list`, `--snapshot`, `--palette` and `--hang`, debug builds only
+- `DevTools.swift`: `--list`, `--snapshot`, `--palette`, `--hang` and `--menu`, debug builds only
 
 ## Rules
 

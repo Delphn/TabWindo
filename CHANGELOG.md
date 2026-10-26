@@ -17,4 +17,4 @@ versions follow [Semantic Versioning](https://semver.org/).
 - Menu options to keep the list to the current desktop (other desktops and full-screen apps are shown by
   default) and to include the windows of hidden apps (left out by default).
 - Tab, ⇧Tab or ⇧ alone, the arrow keys, Return, Esc and the mouse while the switcher is open.
-- A menu bar icon, and launch at login.
+- A menu bar icon, and open at login.

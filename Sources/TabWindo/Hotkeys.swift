@@ -13,6 +13,17 @@ enum Modifier: String, CaseIterable {
         }
     }
 
+    var name: String {
+        switch self {
+        case .command: "Command"
+        case .option: "Option"
+        case .control: "Control"
+        }
+    }
+
+    /// The SF Symbol for the key, which happens to share its name.
+    var symbolName: String { rawValue }
+
     var eventFlag: CGEventFlags {
         switch self {
         case .command: .maskCommand
