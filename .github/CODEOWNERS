@@ -1,0 +1,10 @@
+# One maintainer reviews everything for now. If more join, add them to the first line: the paths below touch
+# permissions, keystrokes, screen capture, private APIs or the release, so they stay with @Delphn.
+* @Delphn
+
+/.github/ @Delphn
+/release.sh @Delphn
+/Info.plist @Delphn
+/Sources/TabWindo/Private.swift @Delphn
+/Sources/TabWindo/Hotkeys.swift @Delphn
+/Sources/TabWindo/Thumbnails.swift @Delphn

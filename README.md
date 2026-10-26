@@ -51,6 +51,11 @@ Requires Xcode 26 or later.
 ./release.sh        # universal build, Developer ID signature, notarization and DMG (setup notes inside)
 ```
 
+## Contributing
+
+Issues and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Report security issues privately,
+as [SECURITY.md](SECURITY.md) explains.
+
 ## License
 
 [MIT](LICENSE)

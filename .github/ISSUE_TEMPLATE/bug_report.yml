@@ -1,0 +1,45 @@
+name: Bug report
+description: Something in TabWindo doesn't work as it should.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: And what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open two Safari windows
+        2. Hold ⌘ and tap Tab twice
+        3. …
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: TabWindo and macOS versions
+      placeholder: TabWindo 1.0.0 on macOS 26.1
+    validations:
+      required: true
+  - type: dropdown
+    id: shortcut
+    attributes:
+      label: Shortcut
+      options:
+        - ⌘Tab
+        - ⌥Tab
+        - ⌃Tab
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Optional. Right after the problem, run this in Terminal and paste what it prints. TabWindo logs counts and
+        timings only, never window titles.
+        `/usr/bin/log show --last 5m --debug --predicate 'subsystem == "dev.delphin.TabWindo"'`
+      render: text
