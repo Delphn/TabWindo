@@ -3,7 +3,7 @@
 The way of the Tab: a fast, private window switcher for macOS.
 
 Hold ⌘ and tap Tab to flick through your open **windows**, not apps, in most-recently-used order, with live
-previews. Each app's windows sit on a plate in that app's own icon color, so you spot them at a glance. It's
+previews. Each window sits on a plate in its app's own icon color, so you spot them at a glance. It's
 built natively in Swift and AppKit with Liquid Glass, so it feels like part of macOS.
 
 ## Features

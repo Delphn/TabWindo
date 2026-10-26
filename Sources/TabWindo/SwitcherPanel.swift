@@ -20,7 +20,6 @@ final class SwitcherPanel {
     private let content = NSView()
     private let scrollView = NSScrollView()
     private let canvas = FlippedView()
-    private var plates: [PlateView] = []
     private var tiles: [TileView] = []
     private var icons: [pid_t: NSImage] = [:]
     private lazy var colors = PlateColors { [unowned self] pid in self.icon(for: pid) }
@@ -65,17 +64,11 @@ final class SwitcherPanel {
             width: layout.thumbnail.width * screen.backingScaleFactor,
             height: layout.thumbnail.height * screen.backingScaleFactor)
         colors.assign(to: Set(items.map(\.pid)))
-        for (index, plate) in layout.plates.enumerated() {
-            let view = plateView(at: index)
-            view.frame = plate.frame
-            view.tint = colors.color(for: plate.pid)
-        }
-        plates.dropFirst(layout.plates.count).forEach { $0.isHidden = true }
         for (index, item) in items.enumerated() {
             let tile = tileView(at: index)
             tile.frame = layout.frames[index]
             tile.show(item, index: index, thumbnail: thumbnails[item.id], icon: icon(for: item.pid))
-            tile.plateTint = colors.color(for: item.pid)
+            tile.tint = colors.color(for: item.pid)
         }
         tiles.dropFirst(items.count).forEach { $0.isHidden = true }
         canvas.frame = NSRect(origin: .zero, size: layout.size)
@@ -106,16 +99,6 @@ final class SwitcherPanel {
 
     func hide() {
         window.orderOut(nil)
-    }
-
-    private func plateView(at index: Int) -> PlateView {
-        while plates.count <= index {
-            let plate = PlateView()
-            plates.append(plate)
-            canvas.addSubview(plate, positioned: .below, relativeTo: nil)  // always behind the tiles
-        }
-        plates[index].isHidden = false
-        return plates[index]
     }
 
     private func tileView(at index: Int) -> TileView {

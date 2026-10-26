@@ -30,7 +30,7 @@ dependencies.
 - `Hotkeys.swift`: Carbon hot keys for ⌘Tab and ⌃Tab; the event tap for ⌥Tab and for keys while the switcher is open
 - `WindowStore.swift`: the window list, kept current on its own thread from Accessibility notifications
 - `Switcher.swift`: one switch, from key press to focus: show delay, selection, modifier release
-- `SwitcherPanel.swift`, `PanelViews.swift`: the glass panel, its plates and tiles
+- `SwitcherPanel.swift`, `PanelViews.swift`: the glass panel and its tiles, each on a plate in its app's color
 - `GridLayout.swift`, `PlateColors.swift`, `OKLCH.swift`: layout, plate colors and the color math, covered by tests
 - `Thumbnails.swift`: previews with ScreenCaptureKit
 - `Private.swift`: every private macOS API, in one place

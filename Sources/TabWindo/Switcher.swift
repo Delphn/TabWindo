@@ -143,7 +143,7 @@ final class Switcher {
     /// Lays the windows out for the screen under the pointer.
     private static func arrange(_ windows: [WindowItem], columns: Int) -> (layout: GridLayout, screen: NSScreen) {
         let screen = NSScreen.underPointer
-        return (GridLayout(windows, columns: columns, on: screen.visibleFrame), screen)
+        return (GridLayout(count: windows.count, columns: columns, on: screen.visibleFrame), screen)
     }
 
     private func schedule(

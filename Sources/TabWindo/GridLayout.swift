@@ -16,20 +16,18 @@ enum Metrics {
     static let lineGap: CGFloat = 10
 }
 
-/// Where each window goes: a fixed number per row, most recent first, simply wrapping. Every window
-/// sits on a plate in its app's color, shared with neighbors from the same app.
+/// Where each window goes: a fixed number per row, most recent first, simply wrapping. Each window sits on its
+/// own plate, in its app's color; that color is what tells apps apart.
 struct GridLayout {
     let thumbnail: NSSize
     let frames: [NSRect]
-    let plates: [(frame: NSRect, pid: pid_t)]
     let size: NSSize
     /// The tallest the grid gets before the panel scrolls.
     let maxHeight: CGFloat
     private let columns: Int
     private let lineCount: Int
 
-    init(_ windows: [WindowItem], columns: Int, on area: NSRect) {
-        let count = windows.count
+    init(count: Int, columns: Int, on area: NSRect) {
         let lines = max(1, (count + columns - 1) / columns)
         let gridWidth = area.width * Metrics.widthShare - Metrics.inset * 2
         let cellWidth = ((gridWidth - CGFloat(columns - 1) * Metrics.columnGap) / CGFloat(columns)).rounded(.down)
@@ -45,18 +43,6 @@ struct GridLayout {
                 x: CGFloat(index % columns) * (cell.width + Metrics.columnGap),
                 y: CGFloat(index / columns) * (cell.height + Metrics.lineGap), width: cell.width, height: cell.height)
         }
-        // One plate per run of neighboring windows from the same app on a line.
-        var plates: [(frame: NSRect, pid: pid_t)] = []
-        var runStart = 0
-        for index in windows.indices {
-            let isRunEnd =
-                index == count - 1 || windows[index + 1].pid != windows[index].pid
-                || (index + 1) % columns == 0
-            guard isRunEnd else { continue }
-            plates.append((frames[runStart].union(frames[index]), windows[index].pid))
-            runStart = index + 1
-        }
-        self.plates = plates
         self.columns = columns
         lineCount = lines
         let used = CGFloat(min(columns, max(count, 1)))

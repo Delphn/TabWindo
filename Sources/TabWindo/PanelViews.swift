@@ -1,40 +1,7 @@
 import AppKit
 
-/// The glass plate behind neighboring windows of one app, tinted with the app's color. Drawn rather
-/// than a real glass view: glass on glass hides the tint.
-final class PlateView: NSView {
-    /// The app's color, usually a dynamic one from `PlateColors`, resolved each time the plate is drawn. AppKit
-    /// redraws when the Mac switches between light and dark, so the plate follows.
-    var tint: NSColor = .systemBlue {
-        didSet { needsDisplay = true }
-    }
-
-    override func draw(_ dirtyRect: NSRect) {
-        let isDark = effectiveAppearance.isDark
-        let tint = tint.resolved(in: effectiveAppearance)
-        let radius: CGFloat = 18
-        let body = NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius)
-        // Frosted base, so the color reads the same whatever is behind the panel, then the app's color.
-        (isDark ? NSColor.black.withAlphaComponent(0.3) : .white.withAlphaComponent(0.5)).setFill()
-        body.fill()
-        tint.withAlphaComponent(PlateStyle(tint: tint, isDark: isDark).tintAlpha).setFill()
-        body.fill()
-        // Sheen: light falling on the top of the glass.
-        NSGradient(colors: [.white.withAlphaComponent(isDark ? 0.1 : 0.3), .white.withAlphaComponent(0)])?
-            .draw(in: body, angle: -90)
-        // Rim: a bright edge at the top fading toward the bottom.
-        let rim = NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius)
-        rim.append(NSBezierPath(roundedRect: bounds.insetBy(dx: 1, dy: 1), xRadius: radius - 1, yRadius: radius - 1))
-        rim.windingRule = .evenOdd
-        NSGradient(colors: [
-            .white.withAlphaComponent(isDark ? 0.35 : 0.9), .white.withAlphaComponent(isDark ? 0.05 : 0.25),
-        ])?
-        .draw(in: rim, angle: -90)
-    }
-}
-
-/// One window: its picture with the app's icon on the corner (or just the icon until a picture
-/// arrives), and its title underneath.
+/// One window: a glass plate in its app's color, its picture with the app's icon on the corner (or just the icon
+/// until a picture arrives), and its title underneath.
 final class TileView: NSView {
     var index = 0
     private(set) var windowID: CGWindowID = 0
@@ -47,9 +14,13 @@ final class TileView: NSView {
             titleLabel.font = .systemFont(ofSize: 12, weight: isSelected ? .semibold : .regular)
         }
     }
-    /// The color of the plate under the tile, which decides the title's color.
-    var plateTint: NSColor = .clear {
-        didSet { updateTitleColor() }
+    /// The app's color, usually a dynamic one from `PlateColors`, resolved each time the plate is drawn. AppKit
+    /// redraws when the Mac switches between light and dark, so the plate follows.
+    var tint: NSColor = .systemBlue {
+        didSet {
+            needsDisplay = true
+            updateTitleColor()
+        }
     }
     /// White titles on dark plates, dark ones elsewhere.
     private(set) var hasLightTitle = false
@@ -146,6 +117,7 @@ final class TileView: NSView {
     }
 
     override func draw(_ dirtyRect: NSRect) {
+        Self.drawPlate(in: bounds, tint: tint, appearance: effectiveAppearance)
         if isSelected {
             let outline = NSBezierPath(roundedRect: bounds.insetBy(dx: 1.5, dy: 1.5), xRadius: 14, yRadius: 14)
             NSColor.controlAccentColor.withAlphaComponent(0.2).setFill()
@@ -160,13 +132,38 @@ final class TileView: NSView {
         }
     }
 
+    /// The glass plate behind a window, tinted with its app's color. Drawn rather than a real glass view: glass
+    /// on glass hides the tint. Meant for a flipped view, like a tile.
+    static func drawPlate(in bounds: NSRect, tint: NSColor, appearance: NSAppearance) {
+        let isDark = appearance.isDark
+        let tint = tint.resolved(in: appearance)
+        let radius: CGFloat = 18
+        let body = NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius)
+        // Frosted base, so the color reads the same whatever is behind the panel, then the app's color.
+        (isDark ? NSColor.black.withAlphaComponent(0.3) : .white.withAlphaComponent(0.5)).setFill()
+        body.fill()
+        tint.withAlphaComponent(PlateStyle(tint: tint, isDark: isDark).tintAlpha).setFill()
+        body.fill()
+        // Sheen: light falling on the top of the glass. In a flipped view, angle 90 runs from the top down.
+        NSGradient(colors: [.white.withAlphaComponent(isDark ? 0.1 : 0.3), .white.withAlphaComponent(0)])?
+            .draw(in: body, angle: 90)
+        // Rim: a bright edge at the top fading toward the bottom.
+        let rim = NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius)
+        rim.append(NSBezierPath(roundedRect: bounds.insetBy(dx: 1, dy: 1), xRadius: radius - 1, yRadius: radius - 1))
+        rim.windingRule = .evenOdd
+        NSGradient(colors: [
+            .white.withAlphaComponent(isDark ? 0.35 : 0.9), .white.withAlphaComponent(isDark ? 0.05 : 0.25),
+        ])?
+        .draw(in: rim, angle: 90)
+    }
+
     override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
         updateTitleColor()  // the Mac switched between light and dark
     }
 
     private func updateTitleColor() {
-        let tint = plateTint.resolved(in: effectiveAppearance)
+        let tint = tint.resolved(in: effectiveAppearance)
         hasLightTitle = PlateStyle(tint: tint, isDark: effectiveAppearance.isDark).wantsLightText
         titleLabel.textColor = hasLightTitle ? .white : .black.withAlphaComponent(0.85)
     }

@@ -186,20 +186,22 @@
 
     /// For `--palette`: a plate as the panel draws it, on a stand-in for the panel's glass.
     private final class PaletteSample: NSView {
+        private let tint: NSColor
+
         init(name: String, tint: NSColor, frame: NSRect) {
+            self.tint = tint
             super.init(frame: frame)
-            let plate = PlateView()
-            plate.tint = tint
-            plate.frame = bounds.insetBy(dx: 6, dy: 8)
-            addSubview(plate)
-            addSubview(PaletteLabel(name: name, tint: tint, frame: plate.frame))
+            addSubview(PaletteLabel(name: name, tint: tint, frame: bounds.insetBy(dx: 6, dy: 8)))
         }
+
+        override var isFlipped: Bool { true }  // like a tile, so the plate's sheen is at the top
 
         required init?(coder: NSCoder) { fatalError("not used") }
 
         override func draw(_ dirtyRect: NSRect) {
             NSColor(white: effectiveAppearance.isDark ? 0.17 : 0.93, alpha: 1).setFill()
             bounds.fill()
+            TileView.drawPlate(in: bounds.insetBy(dx: 6, dy: 8), tint: tint, appearance: effectiveAppearance)
         }
     }
 

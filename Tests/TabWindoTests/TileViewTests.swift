@@ -13,7 +13,7 @@ struct TileViewTests {
         try #require(window.contentView).addSubview(tile)
         let yellow = NSColor(srgbRed: 0.95, green: 0.8, blue: 0.1, alpha: 1)
         window.appearance = NSAppearance(named: .aqua)
-        tile.plateTint = PlateColors.plateColor(light: yellow, dark: PlateColors.darkTone(yellow))
+        tile.tint = PlateColors.plateColor(light: yellow, dark: PlateColors.darkTone(yellow))
         #expect(!tile.hasLightTitle)
         window.appearance = NSAppearance(named: .darkAqua)
         #expect(tile.hasLightTitle)
