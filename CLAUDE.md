@@ -16,6 +16,8 @@ dependencies.
     switcher would show.
   - `open -n -W /Applications/TabWindo.app --args --snapshot "$TMPDIR/panel.png"` saves a picture of the panel.
     It fails while the Mac is locked.
+- Tune plate colors: `swift build && .build/debug/TabWindo --palette "$TMPDIR/palette.png"` draws every installed
+  app's icon colors and plates, in light and dark mode. It needs no permissions and works while the Mac is locked.
 - Logs: `/usr/bin/log show --last 5m --debug --predicate 'subsystem == "dev.delphin.TabWindo"'` (in zsh, plain
   `log` is a builtin).
 - Release: `./release.sh` (Developer ID, notarization, DMG). Never run it unasked: it uploads the app to Apple.
@@ -27,10 +29,10 @@ dependencies.
 - `WindowStore.swift`: the window list, kept current on its own thread from Accessibility notifications
 - `Switcher.swift`: one switch, from key press to focus: show delay, selection, modifier release
 - `SwitcherPanel.swift`, `PanelViews.swift`: the glass panel, its plates and tiles
-- `GridLayout.swift`, `PlateColors.swift`: layout and color logic, covered by tests
+- `GridLayout.swift`, `PlateColors.swift`, `OKLCH.swift`: layout, plate colors and the color math, covered by tests
 - `Thumbnails.swift`: previews with ScreenCaptureKit
 - `Private.swift`: every private macOS API, in one place
-- `DevTools.swift`: `--list` and `--snapshot`, debug builds only
+- `DevTools.swift`: `--list`, `--snapshot` and `--palette`, debug builds only
 
 ## Rules
 
@@ -44,6 +46,8 @@ dependencies.
   burns CPU.
 - 0% CPU while idle: nothing runs while the switcher is closed. The 120 Hz modifier poll runs only while it's open.
 - Logs hold counts and timings, never window titles or app names. Anything logged on every switch uses `.debug`.
+- Plate colors are dynamic colors. Anything that differs between light and dark is worked out when drawing, or in
+  `viewDidChangeEffectiveAppearance`, never stored, so the panel follows the Mac when it switches.
 - Logic that can be pure stays out of AppKit, as `nonisolated static` functions with tests (like
   `GridLayout`, `PlateColors.assign`, `WindowStore.comesBefore`).
 - Small files with one job each. Comments say why, in plain words.

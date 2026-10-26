@@ -13,6 +13,8 @@ built natively in Swift and AppKit with Liquid Glass, so it feels like part of m
 - **Instant.** The window list is kept ready in the background, and the panel appears in a few milliseconds. A
   quick tap jumps straight back to your previous window without showing anything.
 - **Live previews** in a grid you size from the menu: 2 to 7 windows per row.
+- **Easy on the eyes in dark mode.** Plates take a deeper, calmer shade of each app's color, and the switcher
+  follows your Mac between light and dark, even when it switches on a schedule.
 - **Your shortcut:** ⌘Tab (it takes over the built-in app switcher while TabWindo runs), ⌥Tab or ⌃Tab.
 - **Keys while it's open:** Tab moves forward; ⇧Tab, or ⇧ on its own, moves back; the arrow keys move around the
   grid; releasing the modifier or pressing Return switches; Esc cancels. The mouse works too.

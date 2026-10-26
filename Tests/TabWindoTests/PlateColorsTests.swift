@@ -40,8 +40,21 @@ struct PlateColorsTests {
         #expect(first.brightnessComponent < 0.2)
     }
 
-    @Test func aWhiteIconHasNoColor() {
-        #expect(PlateColors.colors(of: icon(background: .white)).isEmpty)
+    @Test func aWhiteIconGivesWhite() throws {
+        let colors = PlateColors.colors(of: icon(background: .white))
+        #expect(colors.count == 1)
+        let first = try #require(colors.first?.usingColorSpace(.sRGB))
+        #expect(first.brightnessComponent > 0.9)
+    }
+
+    @Test func aLogosColorIsNotDulledByItsShading() throws {
+        // A bright red logo on a dark red background: the red is the logo's, not an average of the two.
+        let darkRed = NSColor(srgbRed: 0.25, green: 0.05, blue: 0.05, alpha: 1)
+        let brightRed = NSColor(srgbRed: 1, green: 0.3, blue: 0.3, alpha: 1)
+        let colors = PlateColors.colors(
+            of: icon(background: darkRed, [(NSRect(x: 0.25, y: 0.25, width: 0.5, height: 0.5), brightRed)]))
+        let first = try #require(colors.first?.usingColorSpace(.sRGB))
+        #expect(first.brightnessComponent > 0.9)
     }
 
     @Test func aColoredLogoWinsOverGrays() throws {
@@ -92,5 +105,43 @@ struct PlateColorsTests {
         let orange = NSColor(srgbRed: 1, green: 0.6, blue: 0.1, alpha: 1)
         let chosen = PlateColors.assign([(pid: 1, colors: [blue, orange])], keeping: [1: orange])
         #expect(chosen[1] == orange)
+    }
+
+    // MARK: Dark mode
+
+    @Test func darkModeKeepsTheHueButCalmsTheColor() {
+        for color in [blue, green, red, yellow] {
+            let tone = OKLCH(PlateColors.darkTone(color))
+            #expect((0.3...0.5).contains(tone.lightness))
+            #expect(tone.chroma <= 0.101)
+            #expect(abs(remainder(tone.hue - OKLCH(color).hue, 2 * .pi)) < 0.05)
+        }
+    }
+
+    @Test func blackStaysVisibleOnTheDarkPanel() {
+        #expect(OKLCH(PlateColors.darkTone(.black)).lightness > 0.29)
+    }
+
+    @Test func inDarkModeASecondAppWithTheSameColorGetsAShadeOfIt() throws {
+        let chosen = PlateColors.assign(
+            [(pid: 1, colors: [blue]), (pid: 2, colors: [blue])], keeping: [:], isDark: true)
+        let first = try #require(chosen[1])
+        let second = try #require(chosen[2])
+        #expect(PlateColors.areAlike(first, PlateColors.darkTone(blue)))
+        #expect(!PlateColors.areAlike(first, second))
+    }
+
+    @Test func aPlateColorFollowsTheAppearance() throws {
+        let color = PlateColors.plateColor(light: yellow, dark: blue)
+        let light = try #require(NSAppearance(named: .aqua))
+        let dark = try #require(NSAppearance(named: .darkAqua))
+        #expect(PlateColors.areAlike(color.resolved(in: light), yellow))
+        #expect(PlateColors.areAlike(color.resolved(in: dark), blue))
+    }
+
+    @Test func darkPlatesGetWhiteTitles() {
+        for color in [blue, green, red, yellow, .white, .black] {
+            #expect(PlateStyle(tint: PlateColors.darkTone(color), isDark: true).wantsLightText)
+        }
     }
 }

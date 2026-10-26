@@ -3,12 +3,15 @@ import AppKit
 /// The glass plate behind neighboring windows of one app, tinted with the app's color. Drawn rather
 /// than a real glass view: glass on glass hides the tint.
 final class PlateView: NSView {
+    /// The app's color, usually a dynamic one from `PlateColors`, resolved each time the plate is drawn. AppKit
+    /// redraws when the Mac switches between light and dark, so the plate follows.
     var tint: NSColor = .systemBlue {
         didSet { needsDisplay = true }
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        let isDark = effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+        let isDark = effectiveAppearance.isDark
+        let tint = tint.resolved(in: effectiveAppearance)
         let radius: CGFloat = 18
         let body = NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius)
         // Frosted base, so the color reads the same whatever is behind the panel, then the app's color.
@@ -44,10 +47,12 @@ final class TileView: NSView {
             titleLabel.font = .systemFont(ofSize: 12, weight: isSelected ? .semibold : .regular)
         }
     }
-    /// White titles on dark plates, dark ones elsewhere.
-    var hasLightTitle = false {
-        didSet { titleLabel.textColor = hasLightTitle ? .white : .black.withAlphaComponent(0.85) }
+    /// The color of the plate under the tile, which decides the title's color.
+    var plateTint: NSColor = .clear {
+        didSet { updateTitleColor() }
     }
+    /// White titles on dark plates, dark ones elsewhere.
+    private(set) var hasLightTitle = false
 
     private let thumbnailView = NSImageView()
     private let iconView = NSImageView()
@@ -153,6 +158,17 @@ final class TileView: NSView {
             NSColor.quaternaryLabelColor.setFill()
             NSBezierPath(roundedRect: thumbnailBox, xRadius: 8, yRadius: 8).fill()
         }
+    }
+
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        updateTitleColor()  // the Mac switched between light and dark
+    }
+
+    private func updateTitleColor() {
+        let tint = plateTint.resolved(in: effectiveAppearance)
+        hasLightTitle = PlateStyle(tint: tint, isDark: effectiveAppearance.isDark).wantsLightText
+        titleLabel.textColor = hasLightTitle ? .white : .black.withAlphaComponent(0.85)
     }
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }

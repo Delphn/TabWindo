@@ -10,5 +10,7 @@ versions follow [Semantic Versioning](https://semver.org/).
 - Switch windows, not apps, most recent first, with ⌘Tab, ⌥Tab or ⌃Tab.
 - Windows on every display, on other Spaces and in full-screen apps, with minimized windows last.
 - Live previews in a grid of 2 to 7 windows per row, on plates in each app's icon color.
+- Calm plates in dark mode: a deeper shade of each app's color. The switcher follows the Mac between light and dark,
+  including when it switches on its own.
 - Tab, ⇧Tab or ⇧ alone, the arrow keys, Return, Esc and the mouse while the switcher is open.
 - A menu bar icon, and launch at login.

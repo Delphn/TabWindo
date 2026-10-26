@@ -65,7 +65,6 @@ final class SwitcherPanel {
             width: layout.thumbnail.width * screen.backingScaleFactor,
             height: layout.thumbnail.height * screen.backingScaleFactor)
         colors.assign(to: Set(items.map(\.pid)))
-        let isDark = window.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
         for (index, plate) in layout.plates.enumerated() {
             let view = plateView(at: index)
             view.frame = plate.frame
@@ -76,7 +75,7 @@ final class SwitcherPanel {
             let tile = tileView(at: index)
             tile.frame = layout.frames[index]
             tile.show(item, index: index, thumbnail: thumbnails[item.id], icon: icon(for: item.pid))
-            tile.hasLightTitle = PlateStyle(tint: colors.color(for: item.pid), isDark: isDark).wantsLightText
+            tile.plateTint = colors.color(for: item.pid)
         }
         tiles.dropFirst(items.count).forEach { $0.isHidden = true }
         canvas.frame = NSRect(origin: .zero, size: layout.size)
