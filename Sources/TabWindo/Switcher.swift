@@ -33,6 +33,7 @@ final class Switcher {
     private var startedAt: CFTimeInterval = 0
     private var showTimer: Timer?
     private var pollTimer: Timer?
+    private var lockObserver: NSObjectProtocol?
 
     /// A quick tap switches without ever showing the panel; holding longer than this shows it.
     private let showDelay: TimeInterval = 0.1
@@ -45,6 +46,12 @@ final class Switcher {
         }
         thumbnails.onImage = { [unowned self] id, image in
             if self.session != nil { self.panel.setThumbnail(image, for: id) }
+        }
+        // Nothing of ours stays up at the lock screen. Faking this only cancels a switch, so a notification will do.
+        lockObserver = DistributedNotificationCenter.default().addObserver(
+            forName: .screenLocked, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.finish(commit: false) }
         }
     }
 
@@ -75,7 +82,8 @@ final class Switcher {
     #endif
 
     private func begin(backwards: Bool) {
-        guard !windows.isEmpty else { return }
+        // The hot key still fires at the lock screen; nothing may be captured or shown there.
+        guard !windows.isEmpty, !isScreenLocked() else { return }
         startedAt = CACurrentMediaTime()
         let arrangement = Self.arrange(windows, columns: columns)
         (session, layout, screen) = (windows, arrangement.layout, arrangement.screen)

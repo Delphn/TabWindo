@@ -8,7 +8,8 @@ security review with this guide. The rules in `CLAUDE.md` apply too.
 Report these even when unsure, with the scenario that triggers them:
 
 - Anything that breaks a rule in `CLAUDE.md`.
-- Native ⌘Tab left off after any way out: quit, crash, signal, shortcut change.
+- Native ⌘Tab left off after any way out: quit, crash, signal, hang, shortcut change.
+- A switch that can start, or stay open, at the lock screen.
 - Screen capture outside the visible panel, or pictures written anywhere.
 - Window titles, app names or pictures in logs, in files, or leaving the Mac.
 - An Accessibility call that can run on the main thread.

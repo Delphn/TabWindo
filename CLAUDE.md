@@ -11,11 +11,13 @@ dependencies.
 - Lint: `xcrun swift format lint --strict --recursive Sources Tests Package.swift`
 - Format: `xcrun swift format --in-place --recursive Sources Tests Package.swift`. A hook already formats each
   Swift file Claude edits.
-- Try it: `./build.sh` builds, signs, installs to /Applications and relaunches. `./build.sh debug` adds two tools:
+- Try it: `./build.sh` builds, signs, installs to /Applications and relaunches. `./build.sh debug` adds these tools:
   - `open -n -W --stdout "$TMPDIR/list.txt" /Applications/TabWindo.app --args --list` writes the windows the
     switcher would show.
   - `open -n -W /Applications/TabWindo.app --args --snapshot "$TMPDIR/panel.png"` saves a picture of the panel.
     It fails while the Mac is locked.
+  - `open /Applications/TabWindo.app --args --hang 8` runs the app, then blocks its main thread for 8 s two
+    seconds after launch; the log shows macOS getting ⌘Tab back and TabWindo taking it again.
 - Tune plate colors: `swift build && .build/debug/TabWindo --palette "$TMPDIR/palette.png"` draws every installed
   app's icon colors and plates, in light and dark mode. It needs no permissions and works while the Mac is locked.
 - Logs: `/usr/bin/log show --last 5m --debug --predicate 'subsystem == "dev.delphin.TabWindo"'` (in zsh, plain
@@ -32,7 +34,9 @@ dependencies.
 - `GridLayout.swift`, `PlateColors.swift`, `OKLCH.swift`: layout, plate colors and the color math, covered by tests
 - `Thumbnails.swift`: previews with ScreenCaptureKit
 - `Private.swift`: every private macOS API, in one place
-- `DevTools.swift`: `--list`, `--snapshot` and `--palette`, debug builds only
+- `CommandTabGuard.swift`: hands ⌘Tab back to macOS on signals, crashes and main-thread hangs
+- `ScreenLock.swift`: the lock screen, as macOS reports it
+- `DevTools.swift`: `--list`, `--snapshot`, `--palette` and `--hang`, debug builds only
 
 ## Rules
 
@@ -41,10 +45,15 @@ dependencies.
 - Accessibility calls to other apps run on the store thread or the focus queue, never on the main thread, so a
   frozen app can't freeze the switcher.
 - Screen capture only while the panel is on screen, never on a quick tap. Pictures stay in memory.
-- Native ⌘Tab comes back on every way out: quit, shortcut change, SIGTERM, SIGINT, SIGHUP.
+- Native ⌘Tab comes back on every way out: quit, shortcut change, any signal or crash, and while the main thread
+  hangs. Only `CommandTabGuard` calls `setNativeCommandTab`.
+- Nothing starts at the lock screen. `begin` asks macOS (`isScreenLocked()`), never a notification, which any
+  process can fake; notifications only cancel a switch or trigger a rescan.
+- One TabWindo at a time: a second copy quits at launch without touching ⌘Tab.
 - The event tap re-enables itself only after `.tapDisabledByTimeout`. Reacting to other disable events loops and
   burns CPU.
-- 0% CPU while idle: nothing runs while the switcher is closed. The 120 Hz modifier poll runs only while it's open.
+- 0% CPU while idle: nothing runs while the switcher is closed, except the guard's once-a-second check that the main
+  thread answers. The 120 Hz modifier poll runs only while it's open.
 - Logs hold counts and timings, never window titles or app names. Anything logged on every switch uses `.debug`.
 - Plate colors are dynamic colors. Anything that differs between light and dark is worked out when drawing, or in
   `viewDidChangeEffectiveAppearance`, never stored, so the panel follows the Mac when it switches.

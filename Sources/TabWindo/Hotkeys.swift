@@ -53,7 +53,7 @@ final class Hotkeys {
         self.modifier = modifier
         installHandler()
         installTap()
-        if modifier == .command { setNativeCommandTab(enabled: false) }
+        CommandTabGuard.takeOverCommandTab(modifier == .command)
         tabUsesTap =
             modifier == .option
             || !(register(modifier.carbonFlag, id: 1) && register(modifier.carbonFlag | UInt32(shiftKey), id: 2))
@@ -67,7 +67,7 @@ final class Hotkeys {
     /// Releases the shortcut and gives ⌘Tab back to macOS.
     func uninstall() {
         unregisterAll()
-        setNativeCommandTab(enabled: true)
+        CommandTabGuard.takeOverCommandTab(false)
     }
 
     private func register(_ modifiers: UInt32, id: UInt32) -> Bool {

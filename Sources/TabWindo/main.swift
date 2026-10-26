@@ -7,7 +7,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let hotkeys = Hotkeys()
     private let switcher = Switcher()
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-    private var signalSources: [DispatchSourceSignal] = []
     private var isRunning = false
 
     private var modifier: Modifier {
@@ -22,18 +21,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        quitIfAlreadyRunning()
         statusItem.button?.image = NSImage(
             systemSymbolName: "macwindow.on.rectangle",
             accessibilityDescription: "TabWindo")
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
-        restoreCommandTabOnSignals()
+        CommandTabGuard.install()
+        #if DEBUG
+            if let seconds = DevTools.hangSeconds(in: CommandLine.arguments) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { Thread.sleep(forTimeInterval: seconds) }
+            }
+        #endif
         if AXIsProcessTrusted() {
             run()
         } else {
             waitForAccessibility()
         }
+    }
+
+    /// A second copy would fight the first over ⌘Tab. The debug tools never get here, so `open -n … --list` still
+    /// works beside the running app.
+    private func quitIfAlreadyRunning() {
+        let identifier = Bundle.main.bundleIdentifier ?? "dev.delphin.TabWindo"
+        let others = NSRunningApplication.runningApplications(withBundleIdentifier: identifier)
+            .filter { $0.processIdentifier != getpid() }
+        guard !others.isEmpty else { return }
+        logger.notice("Another TabWindo is already running; quitting")
+        exit(0)  // not terminate(): that would hand ⌘Tab back while the other copy still wants it
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -69,20 +85,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 timer.invalidate()
                 self?.run()
             }
-        }
-    }
-
-    /// If the app is killed, hand ⌘Tab back to macOS before exiting.
-    private func restoreCommandTabOnSignals() {
-        for code in [SIGTERM, SIGINT, SIGHUP] {
-            signal(code, SIG_IGN)
-            let source = DispatchSource.makeSignalSource(signal: code, queue: .main)
-            source.setEventHandler { [weak self] in
-                MainActor.assumeIsolated { self?.hotkeys.uninstall() }
-                exit(0)
-            }
-            source.resume()
-            signalSources.append(source)
         }
     }
 

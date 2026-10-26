@@ -61,6 +61,8 @@ final class WindowStore: NSObject {
     private var clock: UInt64 = 0
     private var frontPID: pid_t = 0
     private var isPublishScheduled = false
+    /// Set when the store started at the lock screen, where apps report no windows.
+    private var needsFullRescan = false
 
     private var runLoop: CFRunLoop!
     private let focusQueue = DispatchQueue(label: "TabWindo.focus", qos: .userInteractive)
@@ -92,6 +94,8 @@ final class WindowStore: NSObject {
             self, selector: #selector(appUnhidden), name: NSWorkspace.didUnhideApplicationNotification, object: nil)
         center.addObserver(
             self, selector: #selector(spaceChanged), name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
+        DistributedNotificationCenter.default().addObserver(
+            self, selector: #selector(screenUnlocked), name: .screenUnlocked, object: nil)
 
         let running = NSWorkspace.shared.runningApplications
         let front = NSWorkspace.shared.frontmostApplication?.processIdentifier ?? 0
@@ -126,6 +130,7 @@ final class WindowStore: NSObject {
     private func bootstrap(_ running: [NSRunningApplication], front: pid_t) {
         let start = CACurrentMediaTime()
         frontPID = front
+        needsFullRescan = isScreenLocked()
         running.forEach { trackApp($0, attempt: 0) }
         seedOrderFromScreen()
         if let app = apps[front] { bumpFocusedWindow(of: app) }
@@ -359,11 +364,25 @@ final class WindowStore: NSObject {
     }
 
     @objc private func spaceChanged(_ note: Notification) {
+        perform { self.rescanCurrentSpace() }
+    }
+
+    /// Faking this notification only costs a rescan, so it needs no check against macOS.
+    @objc private func screenUnlocked(_ note: Notification) {
         perform {
-            for app in self.apps.values { app.element.windows.forEach { self.track($0, of: app) } }
-            self.prune()
-            self.setNeedsPublish()
+            self.rescanCurrentSpace()
+            logger.notice("Unlocked; \(self.windows.count, privacy: .public) windows after a rescan")
+            guard self.needsFullRescan else { return }
+            self.needsFullRescan = false
+            self.seedOrderFromScreen()
+            self.discoverOtherSpaces(of: Array(self.apps.keys), thenNotify: false)
         }
+    }
+
+    private func rescanCurrentSpace() {
+        for app in apps.values { app.element.windows.forEach { track($0, of: app) } }
+        prune()
+        setNeedsPublish()
     }
 }
 

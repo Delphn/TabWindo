@@ -6,6 +6,7 @@
     ///   --list               prints the windows the switcher would show, then quits
     ///   --snapshot <file>    shows the panel for a moment, saves a picture of it, then quits
     ///   --palette <file>     saves every installed app's icon colors and plates, in light and dark mode
+    ///   --hang <seconds>     runs normally, then blocks the main thread that long, 2 s after launch (tries the ⌘Tab guard)
     @MainActor
     enum DevTools {
         /// Runs `--list` or `--palette` (they never return) or gives the delegate for `--snapshot`; nil when none
@@ -14,6 +15,11 @@
             if arguments.contains("--list") { listWindowsAndExit() }
             if let path = value(of: "--palette", in: arguments) { savePaletteAndExit(to: path) }
             return value(of: "--snapshot", in: arguments).map(SnapshotDelegate.init(path:))
+        }
+
+        /// The seconds asked for with `--hang`, if any.
+        static func hangSeconds(in arguments: [String]) -> TimeInterval? {
+            value(of: "--hang", in: arguments).flatMap { TimeInterval($0) }
         }
 
         private static func value(of option: String, in arguments: [String]) -> String? {
