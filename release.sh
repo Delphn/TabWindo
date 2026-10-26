@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Public release: builds TabWindo for Apple silicon and Intel, signs it with your Developer ID, has Apple
-# notarize it, and packages it as dist/TabWindo-<version>.dmg, ready to share.
+# notarize it, and packages it as dist/TabWindo.dmg, ready to share.
 #
 # One-time setup:
 #   1. A "Developer ID Application" certificate:
@@ -40,8 +40,9 @@ xcrun notarytool submit "$dist/TabWindo.zip" --keychain-profile "$profile" --wai
 xcrun stapler staple "$app"
 rm "$dist/TabWindo.zip"
 
-# The DMG: the app plus a shortcut to Applications, itself signed, notarized and stapled.
-dmg="$dist/TabWindo-$version.dmg"
+# The DMG: the app plus a shortcut to Applications, itself signed, notarized and stapled. Its name has no version,
+# so the website's Download buttons always get the newest one from releases/latest/download/TabWindo.dmg.
+dmg="$dist/TabWindo.dmg"
 staging="$dist/dmg"
 mkdir -p "$staging"
 cp -R "$app" "$staging/"
@@ -54,4 +55,4 @@ xcrun stapler staple "$dmg"
 
 spctl --assess --type execute -v "$app"
 spctl --assess --type open --context context:primary-signature -v "$dmg"
-echo "Ready to share: $dmg"
+echo "Ready to share: $dmg. Attach it to a GitHub release tagged v$version."
