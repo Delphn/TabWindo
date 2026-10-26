@@ -28,6 +28,8 @@ cp Info.plist "$app/Contents/Info.plist"
 xcrun actool AppIcon.icon --compile "$app/Contents/Resources" --platform macosx --minimum-deployment-target 26.0 \
     --app-icon AppIcon --output-partial-info-plist "$dist/AppIcon-info.plist" >/dev/null
 rm "$dist/AppIcon-info.plist"
+# actool reports success even when it fails, so check for its output.
+[[ -s "$app/Contents/Resources/AppIcon.icns" ]] || { echo "The app icon didn't compile." >&2; exit 1; }
 
 codesign --force --options runtime --timestamp --sign "$identity" "$app"
 codesign --verify --strict "$app"

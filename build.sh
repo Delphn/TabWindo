@@ -20,6 +20,8 @@ cp Info.plist "$bundle/Contents/Info.plist"
 # The Liquid Glass app icon, compiled from the Icon Composer document.
 xcrun actool AppIcon.icon --compile "$bundle/Contents/Resources" --platform macosx --minimum-deployment-target 26.0 \
     --app-icon AppIcon --output-partial-info-plist .build/AppIcon-info.plist >/dev/null
+# actool reports success even when it fails, so check for its output.
+[[ -s "$bundle/Contents/Resources/AppIcon.icns" ]] || { echo "The app icon didn't compile." >&2; exit 1; }
 
 identity=$(security find-identity -v -p codesigning | awk -F'"' '/Apple Development/ { print $2; exit }')
 codesign --force --options runtime --sign "${identity:--}" "$bundle"
