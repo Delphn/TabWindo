@@ -22,8 +22,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        statusItem.button?.image = NSImage(systemSymbolName: "macwindow.on.rectangle",
-                                           accessibilityDescription: "TabWindo")
+        statusItem.button?.image = NSImage(
+            systemSymbolName: "macwindow.on.rectangle",
+            accessibilityDescription: "TabWindo")
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
@@ -119,8 +120,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Quit TabWindo", action: #selector(NSApplication.terminate(_:)),
-                                keyEquivalent: "q"))
+        menu.addItem(
+            NSMenuItem(
+                title: "Quit TabWindo", action: #selector(NSApplication.terminate(_:)),
+                keyEquivalent: "q"))
     }
 
     private func item(_ title: String, _ action: Selector) -> NSMenuItem {
@@ -152,19 +155,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func openAccessibilitySettings() {
-        NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
+        NSWorkspace.shared.open(
+            URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
     }
 
     @objc private func openScreenRecordingSettings() {
-        NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!)
+        NSWorkspace.shared.open(
+            URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!)
     }
 }
 
 MainActor.assumeIsolated {
     #if DEBUG
-    let delegate: NSApplicationDelegate = DevTools.delegate(for: CommandLine.arguments) ?? AppDelegate()
+        let delegate: NSApplicationDelegate = DevTools.delegate(for: CommandLine.arguments) ?? AppDelegate()
     #else
-    let delegate = AppDelegate()
+        let delegate = AppDelegate()
     #endif
     NSApplication.shared.delegate = delegate
     NSApplication.shared.setActivationPolicy(.accessory)

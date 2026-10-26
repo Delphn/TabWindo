@@ -8,13 +8,14 @@ final class SwitcherPanel {
     var onClick: (@MainActor (Int) -> Void)?
     var isVisible: Bool { window.isVisible }
     #if DEBUG
-    var windowNumber: Int { window.windowNumber }
+        var windowNumber: Int { window.windowNumber }
     #endif
     /// The pixel size thumbnails should be captured at for the current layout.
     private(set) var thumbnailPixelSize = CGSize(width: 416, height: 260)
 
-    private let window = NSPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel],
-                                 backing: .buffered, defer: false)
+    private let window = NSPanel(
+        contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel],
+        backing: .buffered, defer: false)
     private let glass = NSGlassEffectView()
     private let content = NSView()
     private let scrollView = NSScrollView()
@@ -56,10 +57,13 @@ final class SwitcherPanel {
         window.alphaValue = 1
     }
 
-    func show(_ items: [WindowItem], layout: GridLayout, on screen: NSScreen, selected: Int,
-              thumbnails: [CGWindowID: CGImage]) {
-        thumbnailPixelSize = CGSize(width: layout.thumbnail.width * screen.backingScaleFactor,
-                                    height: layout.thumbnail.height * screen.backingScaleFactor)
+    func show(
+        _ items: [WindowItem], layout: GridLayout, on screen: NSScreen, selected: Int,
+        thumbnails: [CGWindowID: CGImage]
+    ) {
+        thumbnailPixelSize = CGSize(
+            width: layout.thumbnail.width * screen.backingScaleFactor,
+            height: layout.thumbnail.height * screen.backingScaleFactor)
         colors.assign(to: Set(items.map(\.pid)))
         let isDark = window.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
         for (index, plate) in layout.plates.enumerated() {
@@ -78,10 +82,13 @@ final class SwitcherPanel {
         canvas.frame = NSRect(origin: .zero, size: layout.size)
 
         let area = screen.visibleFrame
-        let size = NSSize(width: layout.size.width + Metrics.inset * 2,
-                          height: min(layout.size.height, layout.maxHeight) + Metrics.inset * 2)
-        window.setFrame(NSRect(x: (area.midX - size.width / 2).rounded(), y: (area.midY - size.height / 2).rounded(),
-                               width: size.width, height: size.height), display: false)
+        let size = NSSize(
+            width: layout.size.width + Metrics.inset * 2,
+            height: min(layout.size.height, layout.maxHeight) + Metrics.inset * 2)
+        window.setFrame(
+            NSRect(
+                x: (area.midX - size.width / 2).rounded(), y: (area.midY - size.height / 2).rounded(),
+                width: size.width, height: size.height), display: false)
         content.frame = glass.bounds
         scrollView.frame = content.bounds.insetBy(dx: Metrics.inset, dy: Metrics.inset)
         scrollView.contentView.scroll(to: .zero)

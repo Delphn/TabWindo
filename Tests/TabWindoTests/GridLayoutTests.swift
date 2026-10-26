@@ -9,8 +9,9 @@ struct GridLayoutTests {
     /// One window per entry, owned by the given app.
     private func windows(_ pids: [pid_t]) -> [WindowItem] {
         pids.enumerated().map { index, pid in
-            WindowItem(id: CGWindowID(index + 1), pid: pid, element: AXUIElementCreateApplication(pid),
-                       title: "Window \(index)", appName: "App \(pid)", isMinimized: false)
+            WindowItem(
+                id: CGWindowID(index + 1), pid: pid, element: AXUIElementCreateApplication(pid),
+                title: "Window \(index)", appName: "App \(pid)", isMinimized: false)
         }
     }
 

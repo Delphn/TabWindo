@@ -23,8 +23,10 @@ final class PlateView: NSView {
         let rim = NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius)
         rim.append(NSBezierPath(roundedRect: bounds.insetBy(dx: 1, dy: 1), xRadius: radius - 1, yRadius: radius - 1))
         rim.windingRule = .evenOdd
-        NSGradient(colors: [.white.withAlphaComponent(isDark ? 0.35 : 0.9), .white.withAlphaComponent(isDark ? 0.05 : 0.25)])?
-            .draw(in: rim, angle: -90)
+        NSGradient(colors: [
+            .white.withAlphaComponent(isDark ? 0.35 : 0.9), .white.withAlphaComponent(isDark ? 0.05 : 0.25),
+        ])?
+        .draw(in: rim, angle: -90)
     }
 }
 
@@ -106,26 +108,33 @@ final class TileView: NSView {
     override func layout() {
         super.layout()
         let padding = Metrics.tilePadding
-        thumbnailBox = NSRect(x: padding, y: padding, width: bounds.width - padding * 2,
-                              height: bounds.height - padding * 2 - Metrics.titleGap - Metrics.titleHeight)
+        thumbnailBox = NSRect(
+            x: padding, y: padding, width: bounds.width - padding * 2,
+            height: bounds.height - padding * 2 - Metrics.titleGap - Metrics.titleHeight)
         var picture = thumbnailBox
         if let thumbnail {
-            let scale = min(thumbnailBox.width / CGFloat(thumbnail.width), thumbnailBox.height / CGFloat(thumbnail.height))
-            let size = NSSize(width: (CGFloat(thumbnail.width) * scale).rounded(),
-                              height: (CGFloat(thumbnail.height) * scale).rounded())
-            picture = NSRect(x: thumbnailBox.midX - size.width / 2, y: thumbnailBox.midY - size.height / 2,
-                             width: size.width, height: size.height)
+            let scale = min(
+                thumbnailBox.width / CGFloat(thumbnail.width), thumbnailBox.height / CGFloat(thumbnail.height))
+            let size = NSSize(
+                width: (CGFloat(thumbnail.width) * scale).rounded(),
+                height: (CGFloat(thumbnail.height) * scale).rounded())
+            picture = NSRect(
+                x: thumbnailBox.midX - size.width / 2, y: thumbnailBox.midY - size.height / 2,
+                width: size.width, height: size.height)
             thumbnailView.frame = picture
         }
         let iconSide = min(96, thumbnailBox.height * 0.5)
-        iconView.frame = NSRect(x: thumbnailBox.midX - iconSide / 2, y: thumbnailBox.midY - iconSide / 2,
-                                width: iconSide, height: iconSide)
+        iconView.frame = NSRect(
+            x: thumbnailBox.midX - iconSide / 2, y: thumbnailBox.midY - iconSide / 2,
+            width: iconSide, height: iconSide)
         // The app's icon hangs on the picture's bottom-left corner, sized with the picture.
         let badge = min(48, max(24, thumbnailBox.height * 0.2))
-        badgeView.frame = NSRect(x: max(2, picture.minX - badge * 0.2), y: picture.maxY - badge * 0.85,
-                                 width: badge, height: badge)
-        titleLabel.frame = NSRect(x: padding, y: thumbnailBox.maxY + Metrics.titleGap,
-                                  width: bounds.width - padding * 2, height: Metrics.titleHeight)
+        badgeView.frame = NSRect(
+            x: max(2, picture.minX - badge * 0.2), y: picture.maxY - badge * 0.85,
+            width: badge, height: badge)
+        titleLabel.frame = NSRect(
+            x: padding, y: thumbnailBox.maxY + Metrics.titleGap,
+            width: bounds.width - padding * 2, height: Metrics.titleHeight)
         // Minimized windows are shown faded, like in the Dock.
         thumbnailView.alphaValue = isMinimized ? 0.5 : 1
         iconView.alphaValue = isMinimized ? 0.5 : 1
@@ -154,7 +163,8 @@ final class TileView: NSView {
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
         trackingAreas.forEach(removeTrackingArea)
-        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseMoved, .activeAlways, .inVisibleRect], owner: self))
+        addTrackingArea(
+            NSTrackingArea(rect: .zero, options: [.mouseMoved, .activeAlways, .inVisibleRect], owner: self))
     }
 }
 

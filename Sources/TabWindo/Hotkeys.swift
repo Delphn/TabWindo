@@ -54,11 +54,14 @@ final class Hotkeys {
         installHandler()
         installTap()
         if modifier == .command { setNativeCommandTab(enabled: false) }
-        tabUsesTap = modifier == .option
+        tabUsesTap =
+            modifier == .option
             || !(register(modifier.carbonFlag, id: 1) && register(modifier.carbonFlag | UInt32(shiftKey), id: 2))
         if tabUsesTap { unregisterAll() }
         updateTap()
-        logger.notice("Shortcut \(modifier.symbol, privacy: .public)Tab via \(self.tabUsesTap ? "event tap" : "hot key", privacy: .public)")
+        logger.notice(
+            "Shortcut \(modifier.symbol, privacy: .public)Tab via \(self.tabUsesTap ? "event tap" : "hot key", privacy: .public)"
+        )
     }
 
     /// Releases the shortcut and gives ⌘Tab back to macOS.
@@ -70,8 +73,10 @@ final class Hotkeys {
     private func register(_ modifiers: UInt32, id: UInt32) -> Bool {
         var ref: EventHotKeyRef?
         let hotKeyID = EventHotKeyID(signature: 0x5441_4257, id: id)  // "TABW"
-        guard RegisterEventHotKey(UInt32(kVK_Tab), modifiers, hotKeyID, GetEventDispatcherTarget(), 0, &ref)
-                == OSStatus(noErr), let ref else { return false }
+        guard
+            RegisterEventHotKey(UInt32(kVK_Tab), modifiers, hotKeyID, GetEventDispatcherTarget(), 0, &ref)
+                == OSStatus(noErr), let ref
+        else { return false }
         hotKeys.append(ref)
         return true
     }
@@ -85,15 +90,18 @@ final class Hotkeys {
         guard !isHandlerInstalled else { return }
         isHandlerInstalled = true
         var pressed = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
-        InstallEventHandler(GetEventDispatcherTarget(), { _, event, userData in
-            guard let event, let userData else { return OSStatus(eventNotHandledErr) }
-            var hotKeyID = EventHotKeyID()
-            GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID),
-                              nil, MemoryLayout<EventHotKeyID>.size, nil, &hotKeyID)
-            let hotkeys = Unmanaged<Hotkeys>.fromOpaque(userData).takeUnretainedValue()
-            MainActor.assumeIsolated { hotkeys.onAction?(hotKeyID.id == 2 ? .previous : .next) }
-            return OSStatus(noErr)
-        }, 1, &pressed, Unmanaged.passUnretained(self).toOpaque(), nil)
+        InstallEventHandler(
+            GetEventDispatcherTarget(),
+            { _, event, userData in
+                guard let event, let userData else { return OSStatus(eventNotHandledErr) }
+                var hotKeyID = EventHotKeyID()
+                GetEventParameter(
+                    event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID),
+                    nil, MemoryLayout<EventHotKeyID>.size, nil, &hotKeyID)
+                let hotkeys = Unmanaged<Hotkeys>.fromOpaque(userData).takeUnretainedValue()
+                MainActor.assumeIsolated { hotkeys.onAction?(hotKeyID.id == 2 ? .previous : .next) }
+                return OSStatus(noErr)
+            }, 1, &pressed, Unmanaged.passUnretained(self).toOpaque(), nil)
     }
 
     private func installTap() {

@@ -19,15 +19,18 @@ final class PlateColors {
 
     func assign(to pids: Set<pid_t>) {
         let running = Set(NSWorkspace.shared.runningApplications.map(\.processIdentifier))
-        chosen = Self.assign(pids.map { (pid: $0, colors: iconColors(for: $0)) },
-                             keeping: chosen.filter { running.contains($0.key) })
+        chosen = Self.assign(
+            pids.map { (pid: $0, colors: iconColors(for: $0)) },
+            keeping: chosen.filter { running.contains($0.key) })
     }
 
     /// Each app gets the strongest of its icon's colors, unless another app on screen already looks like
     /// that, then its next one, then a darker or lighter shade of them. Apps with fewer colors choose
     /// first, having less to fall back on; launch order breaks ties. Colors in `kept` stay when still free.
-    nonisolated static func assign(_ apps: [(pid: pid_t, colors: [NSColor])],
-                                   keeping kept: [pid_t: NSColor]) -> [pid_t: NSColor] {
+    nonisolated static func assign(
+        _ apps: [(pid: pid_t, colors: [NSColor])],
+        keeping kept: [pid_t: NSColor]
+    ) -> [pid_t: NSColor] {
         var chosen = kept
         var taken: [NSColor] = []
         for app in apps.sorted(by: { ($0.colors.count, $0.pid) < ($1.colors.count, $1.pid) }) {
@@ -56,9 +59,11 @@ final class PlateColors {
     /// many icons.
     nonisolated static func colors(of icon: NSImage) -> [NSColor] {
         let side = 32
-        guard let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: side, pixelsHigh: side,
-                                            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
-                                            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)
+        guard
+            let bitmap = NSBitmapImageRep(
+                bitmapDataPlanes: nil, pixelsWide: side, pixelsHigh: side,
+                bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+                colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)
         else { return [] }
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: bitmap)
@@ -73,7 +78,8 @@ final class PlateColors {
                 else { continue }
                 let (saturation, brightness) = (color.saturationComponent, color.brightnessComponent)
                 if brightness > 0.82, saturation < 0.15 { continue }  // white and off-white
-                let key = saturation < 0.18 || brightness < 0.2
+                let key =
+                    saturation < 0.18 || brightness < 0.2
                     ? 12 + min(2, Int(brightness * 3)) : min(11, Int(color.hueComponent * 12))
                 var bucket = buckets[key] ?? (0, 0, 0, 0)
                 bucket.count += 1
@@ -91,16 +97,20 @@ final class PlateColors {
         let grays = buckets.filter { $0.key >= 12 && $0.value.count >= max(8, biggestGray * 0.2) }
         func averages(_ part: [Int: (count: CGFloat, red: CGFloat, green: CGFloat, blue: CGFloat)]) -> [NSColor] {
             part.sorted { ($0.value.count, -$0.key) > ($1.value.count, -$1.key) }
-                .map { NSColor(srgbRed: $0.value.red / $0.value.count, green: $0.value.green / $0.value.count,
-                               blue: $0.value.blue / $0.value.count, alpha: 1) }
+                .map {
+                    NSColor(
+                        srgbRed: $0.value.red / $0.value.count, green: $0.value.green / $0.value.count,
+                        blue: $0.value.blue / $0.value.count, alpha: 1)
+                }
         }
         return colored.isEmpty ? averages(grays) : averages(colored)
     }
 
     private nonisolated static func darker(_ color: NSColor) -> NSColor {
         let rgb = color.usingColorSpace(.sRGB) ?? color
-        return NSColor(hue: rgb.hueComponent, saturation: rgb.saturationComponent,
-                       brightness: rgb.brightnessComponent * 0.5, alpha: 1)
+        return NSColor(
+            hue: rgb.hueComponent, saturation: rgb.saturationComponent,
+            brightness: rgb.brightnessComponent * 0.5, alpha: 1)
     }
 
     private nonisolated static func lighter(_ color: NSColor) -> NSColor {

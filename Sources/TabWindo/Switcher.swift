@@ -64,14 +64,14 @@ final class Switcher {
     }
 
     #if DEBUG
-    /// Opens the panel without a key press and returns its window number, for `--snapshot`.
-    func presentForSnapshot() -> Int {
-        let arrangement = Self.arrange(windows, columns: columns)
-        (session, layout, screen) = (windows, arrangement.layout, arrangement.screen)
-        selection = min(1, windows.count - 1)
-        showPanel()
-        return panel.windowNumber
-    }
+        /// Opens the panel without a key press and returns its window number, for `--snapshot`.
+        func presentForSnapshot() -> Int {
+            let arrangement = Self.arrange(windows, columns: columns)
+            (session, layout, screen) = (windows, arrangement.layout, arrangement.screen)
+            selection = min(1, windows.count - 1)
+            showPanel()
+            return panel.windowNumber
+        }
     #endif
 
     private func begin(backwards: Bool) {
@@ -109,7 +109,9 @@ final class Switcher {
         guard let session, let layout, let screen else { return }
         let start = CACurrentMediaTime()
         panel.show(session, layout: layout, on: screen, selected: selection, thumbnails: thumbnails.images)
-        logger.debug("Panel shown in \(Self.ms(since: start), format: .fixed(precision: 2), privacy: .public) ms, \(Self.ms(since: self.startedAt), format: .fixed(precision: 1), privacy: .public) ms after the key, \(session.count, privacy: .public) windows")
+        logger.debug(
+            "Panel shown in \(Self.ms(since: start), format: .fixed(precision: 2), privacy: .public) ms, \(Self.ms(since: self.startedAt), format: .fixed(precision: 1), privacy: .public) ms after the key, \(session.count, privacy: .public) windows"
+        )
         thumbnails.capture(session, pixelSize: panel.thumbnailPixelSize)
     }
 
@@ -126,7 +128,8 @@ final class Switcher {
         windows.removeAll { $0.id == item.id }
         windows.insert(item, at: 0)
         onFocus?(item)
-        logger.debug("Switched after \(Self.ms(since: self.startedAt), format: .fixed(precision: 1), privacy: .public) ms")
+        logger.debug(
+            "Switched after \(Self.ms(since: self.startedAt), format: .fixed(precision: 1), privacy: .public) ms")
     }
 
     /// Lays the windows out for the screen under the pointer.
@@ -135,8 +138,10 @@ final class Switcher {
         return (GridLayout(windows, columns: columns, on: screen.visibleFrame), screen)
     }
 
-    private func schedule(after interval: TimeInterval, repeats: Bool,
-                          _ action: @escaping @MainActor (Switcher) -> Void) -> Timer {
+    private func schedule(
+        after interval: TimeInterval, repeats: Bool,
+        _ action: @escaping @MainActor (Switcher) -> Void
+    ) -> Timer {
         let timer = Timer(timeInterval: interval, repeats: repeats) { [weak self] _ in
             MainActor.assumeIsolated {
                 if let self { action(self) }

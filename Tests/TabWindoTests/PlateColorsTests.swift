@@ -27,13 +27,15 @@ struct PlateColorsTests {
     // MARK: Reading an icon's colors
 
     @Test func takesTheIconsMainColor() throws {
-        let colors = PlateColors.colors(of: icon(background: .white, [(NSRect(x: 0.1, y: 0.1, width: 0.8, height: 0.8), green)]))
+        let colors = PlateColors.colors(
+            of: icon(background: .white, [(NSRect(x: 0.1, y: 0.1, width: 0.8, height: 0.8), green)]))
         let first = try #require(colors.first?.usingColorSpace(.sRGB))
         #expect(abs(first.greenComponent - 0.8) < 0.05)
     }
 
     @Test func blackLogoOnWhiteGivesBlack() throws {
-        let colors = PlateColors.colors(of: icon(background: .white, [(NSRect(x: 0.3, y: 0.3, width: 0.4, height: 0.4), .black)]))
+        let colors = PlateColors.colors(
+            of: icon(background: .white, [(NSRect(x: 0.3, y: 0.3, width: 0.4, height: 0.4), .black)]))
         let first = try #require(colors.first?.usingColorSpace(.sRGB))
         #expect(first.brightnessComponent < 0.2)
     }
@@ -43,15 +45,19 @@ struct PlateColorsTests {
     }
 
     @Test func aColoredLogoWinsOverGrays() throws {
-        let colors = PlateColors.colors(of: icon(background: .darkGray, [(NSRect(x: 0, y: 0, width: 0.5, height: 0.5), blue)]))
+        let colors = PlateColors.colors(
+            of: icon(background: .darkGray, [(NSRect(x: 0, y: 0, width: 0.5, height: 0.5), blue)]))
         let first = try #require(colors.first?.usingColorSpace(.sRGB))
         #expect(first.blueComponent > 0.8)
         #expect(colors.allSatisfy { ($0.usingColorSpace(.sRGB)?.saturationComponent ?? 0) > 0.18 })
     }
 
     @Test func theBiggestColorComesFirst() throws {
-        let colors = PlateColors.colors(of: icon([(NSRect(x: 0, y: 0, width: 1, height: 0.7), yellow),
-                                                  (NSRect(x: 0, y: 0.7, width: 1, height: 0.3), red)]))
+        let colors = PlateColors.colors(
+            of: icon([
+                (NSRect(x: 0, y: 0, width: 1, height: 0.7), yellow),
+                (NSRect(x: 0, y: 0.7, width: 1, height: 0.3), red),
+            ]))
         #expect(colors.count == 2)
         let first = try #require(colors.first?.usingColorSpace(.sRGB))
         #expect(first.greenComponent > 0.6)  // the yellow

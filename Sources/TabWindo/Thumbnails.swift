@@ -28,7 +28,9 @@ final class Thumbnails {
                     onImage?(id, image)
                 }
             }
-            logger.debug("Captured \(count, privacy: .public) of \(ids.count, privacy: .public) windows in \((CACurrentMediaTime() - start) * 1000, format: .fixed(precision: 1), privacy: .public) ms")
+            logger.debug(
+                "Captured \(count, privacy: .public) of \(ids.count, privacy: .public) windows in \((CACurrentMediaTime() - start) * 1000, format: .fixed(precision: 1), privacy: .public) ms"
+            )
         }
     }
 

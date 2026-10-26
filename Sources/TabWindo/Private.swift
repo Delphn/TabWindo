@@ -37,7 +37,7 @@ func setNativeCommandTab(enabled: Bool) {
 /// False for windows on no Space at all, which is what the background tabs of a tabbed window are.
 func isOnAnySpace(_ windowID: CGWindowID) -> Bool {
     guard let mainConnectionID, let copySpacesForWindows,
-          let spaces = copySpacesForWindows(mainConnectionID(), 0x7, [windowID] as CFArray)?.takeRetainedValue()
+        let spaces = copySpacesForWindows(mainConnectionID(), 0x7, [windowID] as CFArray)?.takeRetainedValue()
     else { return true }
     return CFArrayGetCount(spaces) > 0
 }

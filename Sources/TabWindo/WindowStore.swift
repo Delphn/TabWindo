@@ -79,12 +79,19 @@ final class WindowStore: NSObject {
         ready.wait()
 
         let center = NSWorkspace.shared.notificationCenter
-        center.addObserver(self, selector: #selector(appLaunched), name: NSWorkspace.didLaunchApplicationNotification, object: nil)
-        center.addObserver(self, selector: #selector(appTerminated), name: NSWorkspace.didTerminateApplicationNotification, object: nil)
-        center.addObserver(self, selector: #selector(appActivated), name: NSWorkspace.didActivateApplicationNotification, object: nil)
-        center.addObserver(self, selector: #selector(appHidden), name: NSWorkspace.didHideApplicationNotification, object: nil)
-        center.addObserver(self, selector: #selector(appUnhidden), name: NSWorkspace.didUnhideApplicationNotification, object: nil)
-        center.addObserver(self, selector: #selector(spaceChanged), name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
+        center.addObserver(
+            self, selector: #selector(appLaunched), name: NSWorkspace.didLaunchApplicationNotification, object: nil)
+        center.addObserver(
+            self, selector: #selector(appTerminated), name: NSWorkspace.didTerminateApplicationNotification, object: nil
+        )
+        center.addObserver(
+            self, selector: #selector(appActivated), name: NSWorkspace.didActivateApplicationNotification, object: nil)
+        center.addObserver(
+            self, selector: #selector(appHidden), name: NSWorkspace.didHideApplicationNotification, object: nil)
+        center.addObserver(
+            self, selector: #selector(appUnhidden), name: NSWorkspace.didUnhideApplicationNotification, object: nil)
+        center.addObserver(
+            self, selector: #selector(spaceChanged), name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
 
         let running = NSWorkspace.shared.runningApplications
         let front = NSWorkspace.shared.frontmostApplication?.processIdentifier ?? 0
@@ -93,13 +100,19 @@ final class WindowStore: NSObject {
 
     /// Brings the window forward off the main thread, so a frozen app can't stall the switcher.
     func focus(_ item: WindowItem) {
-        perform { self.bump(item.id); self.setNeedsPublish() }
+        perform {
+            self.bump(item.id)
+            self.setNeedsPublish()
+        }
         focusQueue.async {
             if item.isMinimized {
                 AXUIElementSetAttributeValue(item.element, kAXMinimizedAttribute as CFString, kCFBooleanFalse)
             }
             focusWindow(pid: item.pid, windowID: item.id, element: item.element)
-            self.perform { self.bump(item.id); self.setNeedsPublish() }
+            self.perform {
+                self.bump(item.id)
+                self.setNeedsPublish()
+            }
         }
     }
 
@@ -117,7 +130,9 @@ final class WindowStore: NSObject {
         seedOrderFromScreen()
         if let app = apps[front] { bumpFocusedWindow(of: app) }
         publish()
-        logger.notice("Tracking \(self.windows.count, privacy: .public) windows in \(self.apps.count, privacy: .public) apps after \(Self.ms(since: start), privacy: .public) ms")
+        logger.notice(
+            "Tracking \(self.windows.count, privacy: .public) windows in \(self.apps.count, privacy: .public) apps after \(Self.ms(since: start), privacy: .public) ms"
+        )
         discoverOtherSpaces(of: Array(apps.keys), thenNotify: true)
     }
 
@@ -136,8 +151,9 @@ final class WindowStore: NSObject {
         }
         AXObserverAddNotification(observer, element, kAXFocusedWindowChangedNotification as CFString, refcon)
         CFRunLoopAddSource(runLoop, AXObserverGetRunLoopSource(observer), .defaultMode)
-        let tracked = TrackedApp(pid: pid, element: element, observer: observer,
-                                 name: app.localizedName ?? "", isHidden: app.isHidden)
+        let tracked = TrackedApp(
+            pid: pid, element: element, observer: observer,
+            name: app.localizedName ?? "", isHidden: app.isHidden)
         apps[pid] = tracked
         tracked.element.windows.forEach { track($0, of: tracked) }
     }
@@ -151,12 +167,15 @@ final class WindowStore: NSObject {
 
     private func track(_ element: AXUIElement, of app: TrackedApp) {
         guard let id = element.windowID, windows[id] == nil, element.isWindow else { return }
-        windows[id] = TrackedWindow(id: id, pid: app.pid, element: element,
-                                    title: element.attribute(kAXTitleAttribute) ?? "",
-                                    isMinimized: element.attribute(kAXMinimizedAttribute) ?? false)
+        windows[id] = TrackedWindow(
+            id: id, pid: app.pid, element: element,
+            title: element.attribute(kAXTitleAttribute) ?? "",
+            isMinimized: element.attribute(kAXMinimizedAttribute) ?? false)
         let refcon = Unmanaged.passUnretained(self).toOpaque()
-        for name in [kAXUIElementDestroyedNotification, kAXTitleChangedNotification,
-                     kAXWindowMiniaturizedNotification, kAXWindowDeminiaturizedNotification] {
+        for name in [
+            kAXUIElementDestroyedNotification, kAXTitleChangedNotification,
+            kAXWindowMiniaturizedNotification, kAXWindowDeminiaturizedNotification,
+        ] {
             AXObserverAddNotification(app.observer, element, name as CFString, refcon)
         }
     }
@@ -229,14 +248,19 @@ final class WindowStore: NSObject {
                 return window.isMinimized || isOnAnySpace(window.id)
             }
             .sorted { Self.comesBefore(($0.id, $0.lastUse, $0.isMinimized), ($1.id, $1.lastUse, $1.isMinimized)) }
-            .map { WindowItem(id: $0.id, pid: $0.pid, element: $0.element, title: $0.title,
-                              appName: apps[$0.pid]?.name ?? "", isMinimized: $0.isMinimized) }
+            .map {
+                WindowItem(
+                    id: $0.id, pid: $0.pid, element: $0.element, title: $0.title,
+                    appName: apps[$0.pid]?.name ?? "", isMinimized: $0.isMinimized)
+            }
         DispatchQueue.main.async { MainActor.assumeIsolated { self.onChange?(items) } }
     }
 
     /// The switcher's order: most recently used first, minimized windows last, newer windows first on a tie.
-    static func comesBefore(_ a: (id: CGWindowID, lastUse: UInt64, isMinimized: Bool),
-                            _ b: (id: CGWindowID, lastUse: UInt64, isMinimized: Bool)) -> Bool {
+    static func comesBefore(
+        _ a: (id: CGWindowID, lastUse: UInt64, isMinimized: Bool),
+        _ b: (id: CGWindowID, lastUse: UInt64, isMinimized: Bool)
+    ) -> Bool {
         if a.isMinimized != b.isMinimized { return b.isMinimized }
         if a.lastUse != b.lastUse { return a.lastUse > b.lastUse }
         return a.id > b.id
@@ -259,7 +283,9 @@ final class WindowStore: NSObject {
             }
             self.perform {
                 self.publish()
-                logger.notice("Scanned other Spaces in \(Self.ms(since: start), privacy: .public) ms, \(self.windows.count, privacy: .public) windows tracked")
+                logger.notice(
+                    "Scanned other Spaces in \(Self.ms(since: start), privacy: .public) ms, \(self.windows.count, privacy: .public) windows tracked"
+                )
                 if notify { DispatchQueue.main.async { MainActor.assumeIsolated { self.onReady?() } } }
             }
         }
@@ -272,7 +298,9 @@ final class WindowStore: NSObject {
         var found: [AXUIElement] = []
         for elementID in UInt64(0)..<1000 {
             token.replaceSubrange(12..<20, with: withUnsafeBytes(of: elementID) { Data($0) })
-            guard let element = _AXUIElementCreateWithRemoteToken(token as CFData)?.takeRetainedValue() else { continue }
+            guard let element = _AXUIElementCreateWithRemoteToken(token as CFData)?.takeRetainedValue() else {
+                continue
+            }
             let start = CACurrentMediaTime()
             var subrole: CFTypeRef?
             let result = AXUIElementCopyAttributeValue(element, kAXSubroleAttribute as CFString, &subrole)
@@ -362,7 +390,8 @@ private extension AXUIElement {
     var focusedWindow: AXUIElement? {
         var value: CFTypeRef?
         guard AXUIElementCopyAttributeValue(self, kAXFocusedWindowAttribute as CFString, &value) == .success,
-              let value, CFGetTypeID(value) == AXUIElementGetTypeID() else { return nil }
+            let value, CFGetTypeID(value) == AXUIElementGetTypeID()
+        else { return nil }
         return unsafeBitCast(value, to: AXUIElement.self)
     }
 
