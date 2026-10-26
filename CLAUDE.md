@@ -25,6 +25,8 @@ dependencies.
 - Logs: `/usr/bin/log show --last 5m --debug --predicate 'subsystem == "dev.delphin.TabWindo"'` (in zsh, plain
   `log` is a builtin).
 - Release: `./release.sh` (Developer ID, notarization, DMG). Never run it unasked: it uploads the app to Apple.
+- Website: `python3 -m http.server 4173 --bind 127.0.0.1 --directory site`, then open http://localhost:4173.
+  Pushing `site/` to main publishes it to GitHub Pages (`.github/workflows/pages.yml`).
 
 ## Map of Sources/TabWindo
 
@@ -41,6 +43,18 @@ dependencies.
 - `CommandTabGuard.swift`: hands ⌘Tab back to macOS on signals, crashes and main-thread hangs
 - `ScreenLock.swift`: the lock screen, as macOS reports it
 - `DevTools.swift`: `--list`, `--snapshot`, `--palette`, `--hang` and `--menu`, debug builds only
+
+## The website
+
+`site/` is the website, in plain HTML, CSS and JavaScript: `index.html`, `styles.css`, `theme.js` (applies a
+saved light or dark choice before the page draws) and `app.js` (the theme switch and the switcher demo).
+
+- It loads nothing from other sites: no web fonts, no CDNs, no analytics or trackers. The CSP in `index.html`
+  enforces this.
+- No inline styles or scripts, which the CSP blocks. Styles go in `styles.css`, scripts in their own files.
+- The page works without JavaScript; scripts only add the theme switch and the demo.
+- Colors are `light-dark()` tokens, so light and dark mode follow the Mac unless the visitor picks one.
+- It works at phone width (375 px) without scrolling sideways, and in light and dark mode.
 
 ## Rules
 

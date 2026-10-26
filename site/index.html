@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<title>TabWindo: every window, one Tab away</title>
+<meta name="description" content="A fast, private window switcher for macOS. Hold ⌘ and tap Tab to go through your windows, not your apps, most recent first. Free and open source.">
+<link rel="canonical" href="https://delphn.github.io/TabWindo/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FBFBFD" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1115" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TabWindo">
+<meta property="og:title" content="TabWindo: every window, one Tab away">
+<meta property="og:description" content="A fast, private window switcher for macOS. Free and open source.">
+<meta property="og:url" content="https://delphn.github.io/TabWindo/">
+<meta property="og:image" content="https://delphn.github.io/TabWindo/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The TabWindo icon beside the line: Every window, one Tab away.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<script src="theme.js"></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="top">
+<div class="nav-bar glass">
+<a class="brand" href="#top" aria-label="TabWindo"><img src="icon.png" alt="" width="32" height="32"><span class="brand-name">TabWindo</span></a>
+<nav class="nav-links" aria-label="Main">
+<a href="#features">Features</a>
+<a href="#privacy">Privacy</a>
+<a href="#faq">FAQ</a>
+<a href="https://github.com/Delphn/TabWindo">GitHub</a>
+<a class="btn btn-primary btn-small" href="#download">Download</a>
+<div class="theme" role="group" aria-label="Appearance" hidden>
+<button type="button" data-theme-choice="light" aria-pressed="false" aria-label="Light" title="Light"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z"/></svg></button>
+<button type="button" data-theme-choice="dark" aria-pressed="false" aria-label="Dark" title="Dark"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z"/></svg></button>
+<button type="button" data-theme-choice="auto" aria-pressed="true" aria-label="Match my Mac" title="Match my Mac"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 1 0 0 17a8.5 8.5 0 1 0 0-17z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button>
+</div>
+</nav>
+</div>
+</header>
+
+<main id="main">
+
+<section class="wrap hero">
+<img class="hero-icon" src="icon.png" alt="TabWindo app icon" width="128" height="128">
+<p class="eyebrow">Free and open source, for macOS</p>
+<h1>Every window, one Tab away.</h1>
+<p class="sub">TabWindo does one thing, and does it beautifully. Hold ⌘, tap Tab, and every window is right there, most recent first. No endless settings, no battery spent while it waits: just less time hunting, and more time doing.</p>
+<div class="ctas">
+<a class="btn btn-primary" href="https://github.com/Delphn/TabWindo/releases/latest"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>Download for Mac</a>
+<a class="btn btn-glass glass" href="https://github.com/Delphn/TabWindo">View on GitHub</a>
+</div>
+<p class="meta">macOS 26 or later · Apple silicon and Intel · Signed and notarized by Apple</p>
+
+<div class="stage rim">
+<span class="desk desk-1" aria-hidden="true"></span>
+<span class="desk desk-2" aria-hidden="true"></span>
+<span class="desk desk-3" aria-hidden="true"></span>
+<div class="stage-head">
+<p>Try it: this is the switcher, mid-switch.</p>
+<p>Flip the page to dark at the top right: it follows, like it follows your Mac.</p>
+</div>
+<div class="switcher rim">
+<div class="tiles" role="group" aria-label="Open windows, most recent first">
+<button type="button" class="tile app-chat" aria-pressed="false"><span class="tile-thumb" aria-hidden="true"><span class="tile-bar"><span></span><span></span><span></span></span><span class="tile-body"><span></span><span></span><span></span><span></span></span></span><span class="tile-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4 4v-4H6.5A2.5 2.5 0 0 1 4 13.5z"/></svg></span><span class="tile-title">Family</span></button>
+<button type="button" class="tile app-notes" aria-pressed="true"><span class="tile-thumb" aria-hidden="true"><span class="tile-bar"><span></span><span></span><span></span></span><span class="tile-body"><span></span><span></span><span></span><span></span></span></span><span class="tile-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v16H6zM9 9h6M9 13h6M9 17h4"/></svg></span><span class="tile-title">Groceries</span></button>
+<button type="button" class="tile app-web" aria-pressed="false"><span class="tile-thumb" aria-hidden="true"><span class="tile-bar"><span></span><span></span><span></span></span><span class="tile-body"><span></span><span></span><span></span><span></span></span></span><span class="tile-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM15.5 8.5l-2 5-5 2 2-5z"/></svg></span><span class="tile-title">Weeknight pasta — Recipes</span></button>
+<button type="button" class="tile app-music" aria-pressed="false"><span class="tile-thumb" aria-hidden="true"><span class="tile-bar"><span></span><span></span><span></span></span><span class="tile-body"><span></span><span></span><span></span><span></span></span></span><span class="tile-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12M9 18a2.5 2.5 0 1 1-5 0a2.5 2.5 0 1 1 5 0zM19 16a2.5 2.5 0 1 1-5 0a2.5 2.5 0 1 1 5 0z"/></svg></span><span class="tile-title">Focus Mix</span></button>
+<button type="button" class="tile app-term" aria-pressed="false"><span class="tile-thumb" aria-hidden="true"><span class="tile-bar"><span></span><span></span><span></span></span><span class="tile-body"><span></span><span></span><span></span><span></span></span></span><span class="tile-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4zM8 10l3 2-3 2M13 15h4"/></svg></span><span class="tile-title">~/Projects — zsh</span></button>
+<button type="button" class="tile app-maps" aria-pressed="false"><span class="tile-thumb" aria-hidden="true"><span class="tile-bar"><span></span><span></span><span></span></span><span class="tile-body"><span></span><span></span><span></span><span></span></span></span><span class="tile-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.5-6-11a6 6 0 1 1 12 0c0 5.5-6 11-6 11zM12 7.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5z"/></svg></span><span class="tile-title">Lisbon</span></button>
+<button type="button" class="tile app-pod" aria-pressed="false"><span class="tile-thumb" aria-hidden="true"><span class="tile-bar"><span></span><span></span><span></span></span><span class="tile-body"><span></span><span></span><span></span><span></span></span></span><span class="tile-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM6 11a6 6 0 0 0 12 0M12 17v4"/></svg></span><span class="tile-title">Episode 214</span></button>
+<button type="button" class="tile app-books" aria-pressed="false"><span class="tile-thumb" aria-hidden="true"><span class="tile-bar"><span></span><span></span><span></span></span><span class="tile-body"><span></span><span></span><span></span><span></span></span></span><span class="tile-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2zM5 18a2 2 0 0 1 2-2h10"/></svg></span><span class="tile-title">Chapter 4</span></button>
+</div>
+</div>
+<div class="keys" hidden>
+<div class="keys-row">
+<button type="button" class="key key-shift glass" data-key="previous" aria-label="Shift: previous window">⇧ Shift</button>
+<button type="button" class="key key-tab glass" data-key="next" aria-label="Tab: next window">⇥ Tab</button>
+<button type="button" class="key key-return glass" data-key="switch" aria-label="Return: switch to this window">↩ Return</button>
+</div>
+<p class="caption" aria-live="polite">Tab moves on, Shift steps back, Return switches. Or click a window.</p>
+</div>
+</div>
+</section>
+
+<section class="wrap section" id="windows">
+<div class="split">
+<div>
+<h2 class="h2">Windows, not apps.</h2>
+<p class="lead">The built-in ⌘Tab jumps between apps, so three browser windows are one stop and you still have to find the right one. TabWindo gives every window its own tile, in the order you used them.</p>
+<ul class="checks">
+<li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>All your displays</li>
+<li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Other desktops and full-screen apps</li>
+<li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Minimized windows, at the end</li>
+</ul>
+</div>
+<div class="compare rim">
+<div>
+<p class="label">macOS ⌘Tab</p>
+<div class="native rim" aria-hidden="true">
+<span class="app-web"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
+<span class="app-notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v16H6zM9 9h6M9 13h6M9 17h4"/></svg></span>
+<span class="app-chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4 4v-4H6.5A2.5 2.5 0 0 1 4 13.5z"/></svg></span>
+<span class="app-music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12M9 18a2.5 2.5 0 1 1-5 0a2.5 2.5 0 1 1 5 0zM19 16a2.5 2.5 0 1 1-5 0a2.5 2.5 0 1 1 5 0z"/></svg></span>
+</div>
+<p class="note">4 apps. Your three browser windows hide behind one icon.</p>
+</div>
+<div>
+<p class="label">TabWindo</p>
+<div class="mini-grid rim" aria-hidden="true">
+<span class="mini app-web"></span><span class="mini app-notes"></span><span class="mini app-web"></span><span class="mini app-chat"></span><span class="mini app-music"></span><span class="mini app-web"></span><span class="mini app-notes"></span>
+</div>
+<p class="note">7 windows, one tile each, most recent first. Same app, same color.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="wrap section" id="features">
+<div class="intro">
+<h2 class="h2">Fast, colorful and out of your way.</h2>
+<p class="lead">Everything in TabWindo is tuned for the moment between pressing a key and getting back to work.</p>
+</div>
+<div class="cards">
+<article class="card rim">
+<span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3L5 13h6l-1 8 8-10h-6z"/></svg></span>
+<h3>Instant</h3>
+<p>Your windows are tracked in the background, so the panel appears in a few milliseconds. A quick tap jumps back to your last window without showing anything.</p>
+</article>
+<article class="card rim">
+<span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h12v12H4zM8 4h12v12"/></svg></span>
+<h3>Every window</h3>
+<p>All displays, other desktops and full-screen apps, with minimized windows at the end. Want hidden apps too? One click in the menu.</p>
+</article>
+<article class="card rim">
+<span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.9 1.8-1.9 0-.5-.2-.9-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1.1.9-1.9 2-1.9H17a4 4 0 0 0 4-4C21 6.5 17 3 12 3zM7.5 12.5h.01M9.5 8h.01M14.5 8h.01M17 11.5h.01"/></svg></span>
+<h3>Colors you already know</h3>
+<p>Each window sits on a plate in its app’s own icon color, so you spot your notes or your chats at a glance.</p>
+<div class="scene scene-day rim" aria-hidden="true"><div class="scene-panel glass"><span class="scene-tile app-chat"></span><span class="scene-tile app-notes"></span><span class="scene-tile app-web"></span><span class="scene-tile app-music"></span></div></div>
+</article>
+<article class="card rim">
+<span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z"/></svg></span>
+<h3>Easy on the eyes at night</h3>
+<p>In dark mode, plates take a deeper, calmer shade. TabWindo follows your Mac between light and dark, even when it switches on a schedule.</p>
+<div class="scene scene-night rim" aria-hidden="true"><div class="scene-panel glass"><span class="scene-tile app-chat"></span><span class="scene-tile app-notes"></span><span class="scene-tile app-web"></span><span class="scene-tile app-music"></span></div></div>
+</article>
+<article class="card rim">
+<span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6a3 3 0 1 0-3 3h3V6zM9 9h6v6H9zM15 6a3 3 0 1 1 3 3h-3V6zM9 18a3 3 0 1 1-3-3h3v3zM15 18a3 3 0 1 0 3-3h-3v3z"/></svg></span>
+<h3>Your shortcut</h3>
+<p>⌘Tab, ⌥Tab or ⌃Tab. With ⌘Tab, TabWindo takes over the built-in switcher and hands it back the moment you quit.</p>
+</article>
+<article class="card rim">
+<span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v10H3zM7 11h.01M11 11h.01M15 11h.01M8 14h8"/></svg></span>
+<h3>Keys or mouse</h3>
+<p>Tab moves on, ⇧ alone steps back, the arrows move around the grid. Let go to switch, Esc to cancel, or just click a window.</p>
+</article>
+</div>
+</section>
+
+<section class="band" id="privacy">
+<div class="wrap">
+<p class="kicker">Privacy</p>
+<h2 class="h2">Private by design.</h2>
+<p class="lead">A window switcher can see everything on your screen. TabWindo is built to look as little as possible, and to show you exactly what it does.</p>
+<blockquote class="quote">Some window switchers capture your screen all day to keep previews ready. TabWindo takes pictures only while you’re switching.</blockquote>
+<div class="points">
+<div class="point">
+<span class="point-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z"/></svg></span>
+<div><h3>Pictures only while you switch</h3><p>Previews are taken while the panel is on screen, never on a quick tap. They stay in memory and are never saved.</p></div>
+</div>
+<div class="point">
+<span class="point-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5a15 15 0 0 1 4.5-2.7M10 5.1A15 15 0 0 1 22 8.5M5 12a10 10 0 0 1 3-1.8M14.5 10.4A10 10 0 0 1 19 12M8.5 15.5a5 5 0 0 1 7 0M12 19h.01M3 3l18 18"/></svg></span>
+<div><h3>Nothing leaves your Mac</h3><p>There’s no network code at all: no analytics, no accounts, no updater.</p></div>
+</div>
+<div class="point">
+<span class="point-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span>
+<div><h3>Two permissions, both explained</h3><p>Accessibility, to see your windows and bring one forward. Screen Recording, only for previews: skip it and you get app icons instead.</p></div>
+</div>
+<div class="point">
+<span class="point-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5M4 4v4.5h4.5"/></svg></span>
+<div><h3>Your ⌘Tab is always safe</h3><p>If TabWindo quits, crashes or stops responding, macOS gets its own ⌘Tab back right away.</p></div>
+</div>
+<div class="point">
+<span class="point-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 1.8 3-.3.9 2.9 2.5 1.7-1 2.9 1 2.9-2.5 1.7-.9 2.9-3-.3L12 21l-2.4-1.8-3 .3-.9-2.9-2.5-1.7 1-2.9-1-2.9 2.5-1.7.9-2.9 3 .3zM8.5 12l2.5 2.5 4.5-5"/></svg></span>
+<div><h3>Checked by Apple</h3><p>Signed with a Developer ID and notarized, so macOS verifies it before it ever opens.</p></div>
+</div>
+<div class="point">
+<span class="point-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></svg></span>
+<div><h3>Read every line</h3><p>About 2,000 lines of Swift, open source under the MIT License. <a href="https://github.com/Delphn/TabWindo">See the code</a></p></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="wrap section" id="menu">
+<div class="split">
+<div>
+<h2 class="h2">Everything in one menu.</h2>
+<p class="lead">No settings window and no setup. Pick your shortcut, how many windows sit in a row, and what to show, right from the menu bar.</p>
+<ul class="checks">
+<li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Command, Option or Control Tab</li>
+<li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>2 to 7 windows per row, tried live</li>
+<li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Other desktops, hidden apps: your call</li>
+<li><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Opens at login, if you like</li>
+</ul>
+</div>
+<div class="menu-stage rim">
+<span class="desk desk-a" aria-hidden="true"></span>
+<span class="desk desk-b" aria-hidden="true"></span>
+<div class="menu glass" role="img" aria-label="The TabWindo menu: the shortcut, windows per row, what to show, Open at Login and Quit.">
+<p class="menu-title">TabWindo</p>
+<span class="menu-sep"></span>
+<p class="menu-head">Shortcut</p>
+<div class="menu-row"><svg class="menu-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span class="menu-glyph">⌘</span>Command Tab</div>
+<div class="menu-row"><span class="menu-check"></span><span class="menu-glyph">⌥</span>Option Tab</div>
+<div class="menu-row"><span class="menu-check"></span><span class="menu-glyph">⌃</span>Control Tab</div>
+<span class="menu-sep"></span>
+<p class="menu-head">Windows per Row</p>
+<div class="menu-seg"><span>2</span><span>3</span><span class="on">4</span><span>5</span><span>6</span><span>7</span></div>
+<span class="menu-sep"></span>
+<p class="menu-head">Show</p>
+<div class="menu-row"><svg class="menu-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><svg class="menu-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8h11v11H8zM5 16V5h11"/></svg>Other Desktops and Full Screen</div>
+<div class="menu-row"><span class="menu-check"></span><svg class="menu-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 6.2A9.8 9.8 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.2 3.8M6.6 7.6C3.7 9.4 2 12 2 12s3.5 6 10 6a9.6 9.6 0 0 0 4.4-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>Hidden Apps</div>
+<span class="menu-sep"></span>
+<div class="menu-row plain">Open at Login</div>
+<div class="menu-row plain">Quit TabWindo<span class="menu-key">⌘Q</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="wrap section faq" id="faq">
+<h2 class="h2">Questions</h2>
+<div class="faq-list">
+<details>
+<summary>Why does TabWindo need Accessibility access?<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></summary>
+<p>To see your windows and bring the one you pick to the front. macOS asks once, and you can turn it off in System Settings at any time.</p>
+</details>
+<details>
+<summary>Do I have to allow Screen Recording?<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></summary>
+<p>Only if you want live previews. Without it, TabWindo works exactly the same and shows app icons instead.</p>
+</details>
+<details>
+<summary>What happens to the built-in ⌘Tab?<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></summary>
+<p>With ⌘Tab chosen, TabWindo takes over the shortcut while it runs. Quit it, or if it ever crashes or stops responding, and macOS’s own ⌘Tab comes right back. ⌥Tab and ⌃Tab leave it alone.</p>
+</details>
+<details>
+<summary>Why isn’t it on the Mac App Store?<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></summary>
+<p>App Store apps run in a sandbox that blocks the Accessibility access needed to bring a specific window forward. So TabWindo is signed with a Developer ID and notarized by Apple instead, like many Mac utilities.</p>
+</details>
+<details>
+<summary>Is it really free?<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></summary>
+<p>Yes. TabWindo is open source under the MIT License: free to use, read and change.</p>
+</details>
+</div>
+</section>
+
+<section class="wrap section" id="download">
+<div class="download rim">
+<img src="icon.png" alt="" width="96" height="96">
+<h2 class="h2">Get TabWindo.</h2>
+<p>Free and open source. Requires macOS 26 or later.</p>
+<div class="ctas">
+<a class="btn btn-primary" href="https://github.com/Delphn/TabWindo/releases/latest"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>Download for Mac</a>
+<a class="btn btn-glass glass" href="https://github.com/Delphn/TabWindo">View on GitHub</a>
+</div>
+<p class="small">Prefer to build it yourself? Clone the repository and run <code>./build.sh</code></p>
+</div>
+</section>
+
+</main>
+
+<footer class="wrap footer">
+<div class="footer-top">
+<div class="footer-brand">
+<a class="brand" href="#top"><img src="icon.png" alt="" width="28" height="28">TabWindo</a>
+<p>Every window, one Tab away. A fast, private window switcher for macOS.</p>
+</div>
+<div class="footer-cols">
+<nav aria-label="Product">
+<p>Product</p>
+<a href="#download">Download</a>
+<a href="#features">Features</a>
+<a href="#privacy">Privacy</a>
+<a href="#faq">Questions</a>
+</nav>
+<nav aria-label="Project">
+<p>Project</p>
+<a href="https://github.com/Delphn/TabWindo">Source code</a>
+<a href="https://github.com/Delphn/TabWindo/releases">Releases</a>
+<a href="https://github.com/Delphn/TabWindo/blob/main/CHANGELOG.md">Changelog</a>
+<a href="https://github.com/Delphn/TabWindo/security/policy">Security</a>
+</nav>
+</div>
+</div>
+<p class="legal">Free and open source under the <a href="https://github.com/Delphn/TabWindo/blob/main/LICENSE">MIT License</a>. Not affiliated with Apple.</p>
+</footer>
+</body>
+</html>

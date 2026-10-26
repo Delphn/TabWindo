@@ -1,11 +1,13 @@
 # Builds, tests and lints every pull request and every push to main. It needs no secrets: signing and
-# notarization happen only on the maintainer's Mac, with release.sh.
+# notarization happen only on the maintainer's Mac, with release.sh. Changes to the website alone skip it.
 name: CI
 
 on:
   push:
     branches: [main]
+    paths-ignore: [site/**]
   pull_request:
+    paths-ignore: [site/**]
 
 permissions:
   contents: read
