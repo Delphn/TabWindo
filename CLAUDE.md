@@ -64,6 +64,8 @@ dependencies.
 - Logic that can be pure stays out of AppKit, as `nonisolated static` functions with tests (like
   `GridLayout`, `PlateColors.assign`, `WindowStore.comesBefore`).
 - Small files with one job each. Comments say why, in plain words.
+- CI builds with Xcode 26, so an API that only the macOS 27 SDK declares breaks the build there, and `#available`
+  doesn't help at compile time. Reach such an API by name (`responds(to:)` + KVC), as the menu does.
 
 ## Done means
 

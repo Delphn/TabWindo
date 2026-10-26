@@ -140,8 +140,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
         item.target = self
         item.image = symbol.flatMap { NSImage(systemSymbolName: $0, accessibilityDescription: nil) }
-        // macOS 27 hides menu images unless asked; the icons are what make the options quick to tell apart.
-        if #available(macOS 27, *) { item.preferredImageVisibility = .visible }
+        // macOS 27 hides menu images unless asked, and the icons are what make the options quick to tell apart.
+        // Its SDK alone knows `preferredImageVisibility`, so it's set by name to keep building with Xcode 26.
+        if item.responds(to: Selector(("setPreferredImageVisibility:"))) {
+            item.setValue(1, forKey: "preferredImageVisibility")  // NSMenuItem.ImageVisibility.visible
+        }
         return item
     }
 
