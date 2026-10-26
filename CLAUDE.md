@@ -26,7 +26,8 @@ dependencies.
 
 ## Map of Sources/TabWindo
 
-- `main.swift`: app delegate, menu bar menu, settings, permission prompts
+- `main.swift`: app delegate, menu bar menu, permission prompts
+- `Settings.swift`: the menu's choices, kept in UserDefaults
 - `Hotkeys.swift`: Carbon hot keys for ⌘Tab and ⌃Tab; the event tap for ⌥Tab and for keys while the switcher is open
 - `WindowStore.swift`: the window list, kept current on its own thread from Accessibility notifications
 - `Switcher.swift`: one switch, from key press to focus: show delay, selection, modifier release

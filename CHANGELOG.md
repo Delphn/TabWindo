@@ -14,5 +14,7 @@ versions follow [Semantic Versioning](https://semver.org/).
   including when it switches on its own.
 - macOS gets its own ⌘Tab back whatever happens to TabWindo: quit, crash, or a hang. Nothing starts at the lock
   screen, and only one TabWindo runs at a time.
+- Menu options to keep the list to the current desktop (other desktops and full-screen apps are shown by
+  default) and to include the windows of hidden apps (left out by default).
 - Tab, ⇧Tab or ⇧ alone, the arrow keys, Return, Esc and the mouse while the switcher is open.
 - A menu bar icon, and launch at login.

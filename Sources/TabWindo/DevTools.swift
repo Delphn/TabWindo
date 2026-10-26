@@ -89,15 +89,20 @@
             store.onReady = {
                 let info = CGWindowListCopyWindowInfo(.optionOnScreenOnly, kCGNullWindowID) as? [[String: Any]] ?? []
                 let onScreen = Set(info.compactMap { $0[kCGWindowNumber as String] as? CGWindowID })
-                print("\(latest.count) windows, most recent first:")
+                let listing =
+                    "other desktops \(Settings.showsOtherSpaces ? "on" : "off"), hidden apps \(Settings.showsHiddenApps ? "on" : "off")"
+                print("\(latest.count) windows, most recent first (\(listing)):")
                 for (rank, window) in latest.enumerated() {
+                    let isHidden = NSRunningApplication(processIdentifier: window.pid)?.isHidden ?? false
                     let place =
-                        window.isMinimized ? "minimized" : onScreen.contains(window.id) ? "visible" : "other Space"
+                        window.isMinimized
+                        ? "minimized" : isHidden ? "hidden" : onScreen.contains(window.id) ? "visible" : "other Space"
                     print("\(rank + 1). [\(place)] #\(window.id) \(window.appName): \(window.title)")
                 }
                 exit(0)
             }
             store.start()
+            store.show(otherSpaces: Settings.showsOtherSpaces, hiddenApps: Settings.showsHiddenApps)
             dispatchMain()
         }
     }

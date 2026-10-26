@@ -17,7 +17,7 @@ final class Switcher {
     /// The held modifier; letting go of it confirms the selection.
     var modifier: CGEventFlags = .maskCommand
     /// Windows per row, chosen in the menu bar.
-    var columns = AppDelegate.savedColumns
+    var columns = Settings.columns
     var onFocus: (@MainActor (WindowItem) -> Void)?
     var onOpenChange: (@MainActor (Bool) -> Void)?
 

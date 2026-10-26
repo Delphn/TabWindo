@@ -9,17 +9,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
     private var isRunning = false
 
-    private var modifier: Modifier {
-        get { Modifier(rawValue: UserDefaults.standard.string(forKey: "modifier") ?? "") ?? .command }
-        set { UserDefaults.standard.set(newValue.rawValue, forKey: "modifier") }
-    }
-
-    /// Windows per row in the switcher: 2 to 7, 4 by default.
-    static var savedColumns: Int {
-        let saved = UserDefaults.standard.integer(forKey: "columns")
-        return (2...7).contains(saved) ? saved : 4
-    }
-
     func applicationDidFinishLaunching(_ notification: Notification) {
         quitIfAlreadyRunning()
         statusItem.button?.image = NSImage(
@@ -65,15 +54,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         switcher.onOpenChange = { [hotkeys] isOpen in hotkeys.isSwitcherOpen = isOpen }
         hotkeys.onAction = { [switcher] action in switcher.handle(action) }
         store.start()
-        use(modifier)
+        applyListing()
+        use(Settings.modifier)
         // Previews need Screen Recording. macOS asks once and remembers the answer.
         if !CGPreflightScreenCaptureAccess() { CGRequestScreenCaptureAccess() }
     }
 
     private func use(_ modifier: Modifier) {
-        self.modifier = modifier
+        Settings.modifier = modifier
         switcher.modifier = modifier.eventFlag
         if isRunning { hotkeys.install(modifier) }
+    }
+
+    /// Tells the store what to list, as chosen in the menu.
+    private func applyListing() {
+        guard isRunning else { return }
+        store.show(otherSpaces: Settings.showsOtherSpaces, hiddenApps: Settings.showsHiddenApps)
     }
 
     /// Shows the system's Accessibility prompt, then starts as soon as access is granted.
@@ -104,7 +100,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for option in Modifier.allCases {
             let entry = item("\(option.symbol) Tab", #selector(pickModifier(_:)))
             entry.representedObject = option.rawValue
-            entry.state = option == modifier ? .on : .off
+            entry.state = option == Settings.modifier ? .on : .off
             menu.addItem(entry)
         }
         menu.addItem(.separator())
@@ -113,10 +109,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for count in 2...7 {
             let entry = item("\(count)", #selector(pickColumns(_:)))
             entry.tag = count
-            entry.state = count == Self.savedColumns ? .on : .off
+            entry.state = count == Settings.columns ? .on : .off
             perRow.submenu?.addItem(entry)
         }
         menu.addItem(perRow)
+        menu.addItem(.separator())
+        menu.addItem(.sectionHeader(title: "Show"))
+        let otherSpaces = item("Other Desktops and Full Screen", #selector(toggleOtherSpaces))
+        otherSpaces.state = Settings.showsOtherSpaces ? .on : .off
+        menu.addItem(otherSpaces)
+        let hiddenApps = item("Hidden Apps", #selector(toggleHiddenApps))
+        hiddenApps.state = Settings.showsHiddenApps ? .on : .off
+        menu.addItem(hiddenApps)
         menu.addItem(.separator())
         let login = item("Launch at Login", #selector(toggleLaunchAtLogin))
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
@@ -140,8 +144,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func pickColumns(_ sender: NSMenuItem) {
-        UserDefaults.standard.set(sender.tag, forKey: "columns")
+        Settings.columns = sender.tag
         switcher.columns = sender.tag
+    }
+
+    @objc private func toggleOtherSpaces() {
+        Settings.showsOtherSpaces.toggle()
+        applyListing()
+    }
+
+    @objc private func toggleHiddenApps() {
+        Settings.showsHiddenApps.toggle()
+        applyListing()
     }
 
     @objc private func toggleLaunchAtLogin() {

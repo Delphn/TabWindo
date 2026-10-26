@@ -8,8 +8,9 @@ built natively in Swift and AppKit with Liquid Glass, so it feels like part of m
 
 ## Features
 
-- **Windows, not apps.** Every window, most recent first: all displays, other Spaces, full-screen apps, and
-  minimized windows (shown last). Windows of hidden apps stay out.
+- **Windows, not apps.** Every window, most recent first: all displays, other desktops, full-screen apps, and
+  minimized windows (shown last). From the menu, keep it to the current desktop, or add the windows of hidden
+  (⌘H) apps.
 - **Instant.** The window list is kept ready in the background, and the panel appears in a few milliseconds. A
   quick tap jumps straight back to your previous window without showing anything.
 - **Live previews** in a grid you size from the menu: 2 to 7 windows per row.
@@ -18,7 +19,7 @@ built natively in Swift and AppKit with Liquid Glass, so it feels like part of m
 - **Your shortcut:** ⌘Tab (it takes over the built-in app switcher while TabWindo runs), ⌥Tab or ⌃Tab.
 - **Keys while it's open:** Tab moves forward; ⇧Tab, or ⇧ on its own, moves back; the arrow keys move around the
   grid; releasing the modifier or pressing Return switches; Esc cancels. The mouse works too.
-- Menu bar icon, no Dock icon, optional launch at login.
+- Menu bar icon, no Dock icon: the shortcut, windows per row, what to show, and launch at login.
 
 ## Privacy
 

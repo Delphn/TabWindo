@@ -63,6 +63,9 @@ final class WindowStore: NSObject {
     private var isPublishScheduled = false
     /// Set when the store started at the lock screen, where apps report no windows.
     private var needsFullRescan = false
+    /// What's listed beyond the current desktop's windows; see `show(otherSpaces:hiddenApps:)`.
+    private var showsOtherSpaces = true
+    private var showsHiddenApps = false
 
     private var runLoop: CFRunLoop!
     private let focusQueue = DispatchQueue(label: "TabWindo.focus", qos: .userInteractive)
@@ -117,6 +120,16 @@ final class WindowStore: NSObject {
                 self.bump(item.id)
                 self.setNeedsPublish()
             }
+        }
+    }
+
+    /// Whether to list windows on other desktops (full-screen apps included) and the windows of hidden apps.
+    /// Call after `start()`.
+    func show(otherSpaces: Bool, hiddenApps: Bool) {
+        perform {
+            self.showsOtherSpaces = otherSpaces
+            self.showsHiddenApps = hiddenApps
+            self.setNeedsPublish()
         }
     }
 
@@ -247,10 +260,15 @@ final class WindowStore: NSObject {
     }
 
     private func publish() {
+        // Windows ordered in on any display's current desktop. Not needed while other desktops are listed too.
+        let onScreen = showsOtherSpaces ? [] : Set(windowList(.optionOnScreenOnly))
         let items = windows.values
             .filter { window in
-                guard let app = apps[window.pid], !app.isHidden else { return false }
-                return window.isMinimized || isOnAnySpace(window.id)
+                guard let app = apps[window.pid] else { return false }
+                return Self.lists(
+                    isMinimized: window.isMinimized, appIsHidden: app.isHidden,
+                    isOnScreen: onScreen.contains(window.id), isOnAnySpace: isOnAnySpace(window.id),
+                    otherSpaces: showsOtherSpaces, hiddenApps: showsHiddenApps)
             }
             .sorted { Self.comesBefore(($0.id, $0.lastUse, $0.isMinimized), ($1.id, $1.lastUse, $1.isMinimized)) }
             .map {
@@ -259,6 +277,18 @@ final class WindowStore: NSObject {
                     appName: apps[$0.pid]?.name ?? "", isMinimized: $0.isMinimized)
             }
         DispatchQueue.main.async { MainActor.assumeIsolated { self.onChange?(items) } }
+    }
+
+    /// Whether a window is listed. Minimized windows always are. A hidden app's windows only when asked. The rest
+    /// must be on a desktop (background window tabs are on none) and, unless other desktops are listed, on screen.
+    static func lists(
+        isMinimized: Bool, appIsHidden: Bool, isOnScreen: Bool, isOnAnySpace: @autoclosure () -> Bool,
+        otherSpaces: Bool, hiddenApps: Bool
+    ) -> Bool {
+        if appIsHidden, !hiddenApps { return false }
+        if isMinimized { return true }
+        if appIsHidden { return isOnAnySpace() }
+        return otherSpaces ? isOnAnySpace() : isOnScreen
     }
 
     /// The switcher's order: most recently used first, minimized windows last, newer windows first on a tie.
