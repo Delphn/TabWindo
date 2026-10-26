@@ -1,0 +1,11 @@
+{
+  "fill" : { "linear-gradient" : [ "display-p3:0.30000,0.66000,1.00000,1.00000", "display-p3:0.16000,0.30000,0.94000,1.00000" ] },
+  "groups" : [
+    { "layers" : [ { "glass" : false, "image-name" : "marks.svg", "name" : "marks" } ] },
+    { "layers" : [ { "glass" : true, "image-name" : "front.svg", "name" : "front" } ],
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 }, "translucency" : { "enabled" : true, "value" : 0.15 } },
+    { "layers" : [ { "glass" : true, "image-name" : "back.svg", "name" : "back" } ],
+      "shadow" : { "kind" : "neutral", "opacity" : 0.4 }, "translucency" : { "enabled" : true, "value" : 0.55 } }
+  ],
+  "supported-platforms" : { "squares" : "shared" }
+}
