@@ -228,14 +228,18 @@ final class WindowStore: NSObject {
                 guard let app = apps[window.pid], !app.isHidden else { return false }
                 return window.isMinimized || isOnAnySpace(window.id)
             }
-            .sorted { a, b in
-                if a.isMinimized != b.isMinimized { return b.isMinimized }
-                if a.lastUse != b.lastUse { return a.lastUse > b.lastUse }
-                return a.id > b.id
-            }
+            .sorted { Self.comesBefore(($0.id, $0.lastUse, $0.isMinimized), ($1.id, $1.lastUse, $1.isMinimized)) }
             .map { WindowItem(id: $0.id, pid: $0.pid, element: $0.element, title: $0.title,
                               appName: apps[$0.pid]?.name ?? "", isMinimized: $0.isMinimized) }
         DispatchQueue.main.async { MainActor.assumeIsolated { self.onChange?(items) } }
+    }
+
+    /// The switcher's order: most recently used first, minimized windows last, newer windows first on a tie.
+    static func comesBefore(_ a: (id: CGWindowID, lastUse: UInt64, isMinimized: Bool),
+                            _ b: (id: CGWindowID, lastUse: UInt64, isMinimized: Bool)) -> Bool {
+        if a.isMinimized != b.isMinimized { return b.isMinimized }
+        if a.lastUse != b.lastUse { return a.lastUse > b.lastUse }
+        return a.id > b.id
     }
 
     // MARK: - Other Spaces
